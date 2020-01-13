@@ -1,1 +1,18 @@
 Name; Ordinatio
+
+Possible Technologies;
+- NodeJS
+- Flask
+- Django
+- Bootstrap
+- Simple old HTML, JS, CSS and PHP
+
+Management;
+- GitHub
+
+Deliverables;
+- A web frontend to submit requests for holidays and rotas for employees.
+- A web frontend to accept or reject said requests for employers.
+- A database to store relevant data; logins, salts, passwords etc.
+- Relevant documentation.
+- GDPR compliance.
