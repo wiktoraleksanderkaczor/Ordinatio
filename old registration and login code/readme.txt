@@ -1,5 +1,5 @@
 installation:
-with node.js and the following packages npm packages installed: (npm install [package name])
+with node.js and the following npm packages installed: (npm install [package name])
 express
 express-flash
 passport
