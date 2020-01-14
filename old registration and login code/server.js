@@ -1,13 +1,13 @@
+
+//import required packages
 const express = require('express');
 const flash = require('express-flash');
-//import required packages
-
 const session = require('express-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database('./cipherMail.db');
+const db = new sqlite3.Database('./users.db');
 
 //import code from other files
 const cryptoController = require('./cryptoController.js');
