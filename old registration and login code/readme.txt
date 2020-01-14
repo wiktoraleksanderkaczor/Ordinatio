@@ -6,6 +6,7 @@ passport
 body-parser
 method-override
 sqlite3
+bcrypt
 
 do node dbCreate.js first - this will create the sqlite database file users.sql
 the server can then be launched with node server.js
