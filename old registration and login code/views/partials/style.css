@@ -1,0 +1,115 @@
+body
+{
+	background-color: #060606;
+	color:#B5B5B5;
+}
+
+p,div,input[type=submit],input[type=text],input[type=password],label,form,textarea
+{
+	color:#B5B5B5; 
+	font-size: 18px;
+}
+
+h1
+{
+	text-align: center;
+	text-decoration: underline;
+	font-size: 32px;
+	color:#B5B5B5;
+}
+
+input[type=text],textarea,select
+{
+	width: 33.33%;
+	margin-right: auto;
+	margin-left: auto;
+	display: block;
+	border: 4px solid #1F1F1F;
+	border-radius: 4px;
+	color:#B5B5B5;
+	background-color: #2E2E2E;
+}	
+
+input:placeholder
+{
+	color:#B5B5B5; 
+	font-size: 18px;
+}
+
+input[type=password]
+{
+	width: 33.33%;
+	margin-right: auto;
+	margin-left: auto;
+	display: block;
+	border: 4px solid #1F1F1F;
+	border-radius: 4px;
+	color:#B5B5B5;
+	background-color: #2E2E2E;
+}
+
+input[type=submit]
+{
+	background-color: #2E2E2E;
+	border: 4px solid #1F1F1F;
+	border-radius: 4px;
+	color: #B5B5B5;
+	margin: 8px;
+	padding: 16px;
+	display:inline-block;
+}
+
+input[type=submit]:hover
+{
+	background-color: #0376D1;
+}
+
+input:focus
+{
+	outline-color:#0376D1;
+}
+
+input[type=submit]:focus
+{
+	outline-color:#0376D1
+}
+
+input[type=submit]:active:focus
+{
+	background-color:green;
+	transform: translateY(4px) translateX(4px);
+}
+
+div
+{
+	padding:4px;
+	color:#B5B5B5; 
+	background-color: #131313; 
+	text-align: center; 
+	margin: 1.83%;
+	border-radius: 24px;
+	display: block;
+} 
+
+div.inboxItem
+{
+	padding:4px;
+	width:75%;
+	color:#B5B5B5; 
+	margin-left:auto;
+	margin-right:auto;
+	background-color:#060606; 
+	text-align: center; 
+	border-radius: 24px;
+	display: block;
+} 
+
+
+
+
+
+
+
+
+
+
