@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database('./cipherMail.db');
+const db = new sqlite3.Database('./users.db');
 const LocalStrategy = require('passport-local').Strategy
 const passport = require('passport');
 
