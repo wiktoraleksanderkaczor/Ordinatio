@@ -1,5 +1,5 @@
 const sqlite3 = require ('sqlite3');
-const db = new sqlite3.Database('./cipherMail.db');
+const db = new sqlite3.Database('./users.db');
 const serverFunctions = require('./server.js');
 
 	function storeUser(username, PWHash)
