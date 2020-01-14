@@ -1,18 +1,12 @@
 Name; Ordinatio
 
-Possible Technologies;
+Technologies;
 - NodeJS
-- Flask
-- Django
-- Bootstrap
-- Simple old HTML, JS, CSS and PHP
+https://www.npmjs.com/package/bcrypt
+https://www.npmjs.com/package/passport
+https://www.npmjs.com/package/react
+https://www.npmjs.com/package/express
+https://www.npmjs.com/package/express-fileupload
 
 Management;
-- GitHub
-
-Deliverables;
-- A web frontend to submit requests for holidays and rotas for employees.
-- A web frontend to accept or reject said requests for employers.
-- A database to store relevant data; logins, salts, passwords etc.
-- Relevant documentation.
-- GDPR compliance.
+- GitHub (here)
