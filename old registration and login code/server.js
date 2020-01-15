@@ -12,7 +12,7 @@ const db = new sqlite3.Database('./users.db');
 //import code from other files
 const cryptoController = require('./cryptoController.js');
 const dbController = require('./dbController.js');
-const passportController = require('./passportController2.js');
+const passportController = require('./passportController.js');
 
 //set server settings and setup packages 
 const app = express();
@@ -35,6 +35,21 @@ app.use(passport.session());
 app.use(methodOverride('_method'));
 
 passportController.initialize(passport);
+
+app.get('/', isAuthenticated, (req, res) =>
+{
+	res.redirect('/inbox')
+});
+
+app.get('/inbox', isAuthenticated, (req, res) =>
+{
+	res.render('pages/inbox.ejs')
+});
+
+app.get('/login', isNotAuthenticated, (req, res) =>
+{
+	res.render('pages/login.ejs')
+});
 
 app.post('/login', isNotAuthenticated, passport.authenticate('local',
 {
@@ -108,7 +123,7 @@ function isNotAuthenticated(req, res, next)
 {
 	if(req.isAuthenticated())
 	{
-		return res.redirect('/');
+		return res.redirect('/inbox');
 	}
 	next();
 }
