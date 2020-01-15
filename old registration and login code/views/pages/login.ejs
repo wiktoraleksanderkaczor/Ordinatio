@@ -17,13 +17,5 @@
 				<input type="submit" value="Register" formaction="/register">
 			</form>
 		</div>
-		<%if(messages.error) 
-		{%>
-		<div><p><%=messages.error%>
-		<%}%>
-		<%if(alert != null)
-		{%>
-			<%-include ../partials/alertDiv%>
-		<%}%>
 	</body>
 </html>
