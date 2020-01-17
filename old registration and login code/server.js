@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./users.db');
+const fs = require('fs')
+const https = require('https')
 
 //import code from other files
 const cryptoController = require('./cryptoController.js');
@@ -17,7 +19,10 @@ const passportController = require('./passportController.js');
 //set server settings and setup packages 
 const app = express();
 const port = process.env.PORT;
-app.listen(port || 3000, () => {
+https.createServer({
+   key: fs.readFileSync('server.key'),
+   cert: fs.readFileSync('server.cert')
+}, app).listen(port || 3000, () => {
 console.log('Server up')});
 app.set('view engine', 'ejs'); //sets up ejs as view handler
 app.use(bodyParser.json());
@@ -127,3 +132,4 @@ function isNotAuthenticated(req, res, next)
 	}
 	next();
 }
+
