@@ -10,6 +10,9 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./users.db');
 const fs = require('fs')
 const https = require('https')
+const uuidv4 = require('uuid/v4');
+
+
 
 //import code from other files
 const cryptoController = require('./cryptoController.js');
@@ -18,23 +21,27 @@ const passportController = require('./passportController.js');
 
 //set server settings and setup packages 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
+
 https.createServer({
-   key: fs.readFileSync('server.key'),
-   cert: fs.readFileSync('server.cert')
-}, app).listen(port || 3000, () => {
-console.log('Server up')});
+	key: fs.readFileSync('server.key'),
+	cert: fs.readFileSync('server.cert')
+	}, app).listen(port, () => {console.log('Server up')});
 app.set('view engine', 'ejs'); //sets up ejs as view handler
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true})); 
 app.use(express.static(__dirname + '/views/pages'));
 app.use(flash());
 app.use(session(
-				{
-					secret: "a31ec33094189b0b", //generated from random.org
-					resave: false,
-					saveUninitialized: false
-				})); 
+	{
+		genid: function(req) {
+			return uuidv4() // use UUIDs for session IDs
+		},
+		secret: "a31ec33094189b0b", //generated from random.org
+		resave: false,
+		saveUninitialized: false
+	})); 
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
