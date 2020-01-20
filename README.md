@@ -15,7 +15,7 @@ Run the command "npm init" in the project working directory. This is the folder 
 This will launch the project setup wizard, accept the defaults except for the entry point, change that to "server.js".
 
 ### Run all of the following to install the dependencies:
-'''
+```
 npm install express --save
 npm install express-flash --save
 npm install express-session --save
@@ -29,7 +29,7 @@ npm install ejs --save
 npm install fs --save
 npm install https --save
 npm install uuid --save
-'''
+```
 
 You can run "node dbCreate.js" to create the "users.db" database file, this only has to be done once.
 
