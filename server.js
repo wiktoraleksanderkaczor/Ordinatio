@@ -1,4 +1,3 @@
-
 //import required packages
 const express = require('express');
 const flash = require('express-flash');
@@ -11,8 +10,6 @@ const db = new sqlite3.Database('./users.db');
 const fs = require('fs')
 const https = require('https')
 const uuidv4 = require('uuid/v4');
-
-
 
 //import code from other files
 const cryptoController = require('./cryptoController.js');

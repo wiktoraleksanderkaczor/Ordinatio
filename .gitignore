@@ -1,2 +1,5 @@
 # Ignore node module build folder.
 node_modules/
+
+# Ignore the all databases.
+*.db
