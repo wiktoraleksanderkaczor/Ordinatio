@@ -1,9 +1,9 @@
-Name; Ordinatio
+# Ordinatio
 
-## Technologies;
+## Technologies:
 - NodeJS
 
-## Management;
+## Management:
 - GitHub (here)
 
 The certificate and private key to it are self-generated testing ones not intended to be used in production.

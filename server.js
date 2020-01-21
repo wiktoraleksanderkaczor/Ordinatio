@@ -23,7 +23,7 @@ const port = process.env.PORT || 3000;
 https.createServer({
 	key: fs.readFileSync('server.key'),
 	cert: fs.readFileSync('server.cert')
-	}, app).listen(port, () => {console.log('Server up')});
+	}, app).listen(port, () => {console.log('Server up at https://localhost:3000/')});
 app.set('view engine', 'ejs'); //sets up ejs as view handler
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true})); 
@@ -45,21 +45,25 @@ app.use(methodOverride('_method'));
 
 passportController.initialize(passport);
 
+// Get root page.
 app.get('/', isAuthenticated, (req, res) =>
 {
 	res.redirect('/inbox')
 });
 
+// Render inbox from if authenticated.
 app.get('/inbox', isAuthenticated, (req, res) =>
 {
 	res.render('pages/inbox.ejs')
 });
 
+// Render login form if not authenticated.
 app.get('/login', isNotAuthenticated, (req, res) =>
 {
 	res.render('pages/login.ejs')
 });
 
+// Handler for POST on login.
 app.post('/login', isNotAuthenticated, passport.authenticate('local',
 {
 	successRedirect: '/inbox',
@@ -67,51 +71,6 @@ app.post('/login', isNotAuthenticated, passport.authenticate('local',
 	failureFlash: true
 }));
 
-app.post('/register', isNotAuthenticated, (req, res) => 
-{
-	
-	const input = req.body;
-	if(input.password != input.password2)
-	{
-		res.render('pages/login.ejs', {alert: "Passwords dont match, please try again!"});
-	}
-	else
-	{
-		//if passwords match use this callback function to check if username already exists or not
-		(dbController.getUserByName(input.username, function callback(err, result) 
-		{ 
-			if(err)
-			{
-				throw err;
-			}
-			else
-			{
-				var user = result;
-				if(user == null)
-				{
-					console.log(68);
-					try
-					{
-						//if username is available hash the provided PW and store it in the database
-						cryptoController.hashPW(input.username, input.password);
-						const data = { alert: "Welcome " + input.username + ", you may now log in using the form above."};
-						res.render('pages/login.ejs', data);
-					}
-					catch(e)
-					{
-						//console.log(e.message);
-						res.render('pages/login.ejs', {alert:e.message});
-					}
-				}
-				else
-				{
-				res.render('pages/login.ejs', {alert:"Username already taken, choose a different username."});
-				}
-			}
-			
-		}));
-	}
-});
 
 app.delete('/logout', isAuthenticated, (req, res) => 
 {
