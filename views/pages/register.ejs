@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<title>Ordinatio</title>
+	</head>
+	<body>
+		<div>
+			<h1> Ordinatio Admin Page </h1>
+			<form id="registerForm" method="POST" action="/register">
+				<label for="username">Username:</label>
+				<input type="text" name="username" placeholder="Username" required pattern="^[A-Za-z0-9]{1,12}$" title="Username may only contain letters and numbers and be no more than 12 characters long.">
+				<label for="password">Password:</label>
+				<input type="password" name="password" placeholder = "Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
+				<label for="verify">Verify password:</label>
+				<input type="password" name="verify" placeholder = "Verify password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
+			    <input type="submit" value="Register">
+			</form>
+		</div>
+	</body>
+</html>

@@ -13,8 +13,8 @@ const uuidv4 = require('uuid/v4');
 
 //import code from other files
 const cryptoController = require('./cryptoController.js');
-const dbController = require('./dbController.js');
 const passportController = require('./passportController.js');
+const dbController = require('./dbController.js');
 
 //set server settings and setup packages 
 const app = express();
@@ -71,6 +71,62 @@ app.post('/login', isNotAuthenticated, passport.authenticate('local',
 	failureFlash: true
 }));
 
+// Render register form if authenticated.
+app.get('/register', isAuthenticated, (req, res) =>
+{
+	res.render('pages/register.ejs')
+});
+
+// Redirect to login form if not authenticated.
+app.get('/register', isNotAuthenticated, (req, res) =>
+{
+	res.render('pages/login.ejs')
+});
+
+
+// Register a user for admins.
+app.post("/register", isAuthenticated, (req, res) =>
+{
+	const input = req.body
+	if (input.password != input.verify) {
+		res.render("pages/register.ejs", { alert: "Passwords do not match, please try again!" });
+	}
+	else {
+		(dbController.getUserByName(input.username, function callback(err, result) {
+			if (err) {
+				throw err;
+			}
+			else {
+				var user = result;
+				if (user == null) {
+					console.log(input.username + ": Username isn't taken");
+					try {
+						cryptoController.hashPW(input.username, input.password, function callback(err, result) {
+							if (err) {
+								throw err;
+							}
+							else {
+								dbController.storeUser(input.username, result);
+								console.log(result);
+								
+							}
+						});
+						const data = { alert: "Welcome" + input.username + ", you can now log in." };
+						res.render("pages/login.ejs", data);
+					}
+					catch (e) {
+						const data = { alert: e.message };
+						res.render("pages/register.ejs", data);
+					}
+				}
+				else {
+					const data = { alert: "Username is taken, choose another one." };
+					res.render("pages/register.ejs", data);
+				}
+			}
+		}));
+	}
+});
 
 app.delete('/logout', isAuthenticated, (req, res) => 
 {
