@@ -1,114 +1,159 @@
-//import required packages
-const express = require('express');
-const flash = require('express-flash');
-const session = require('express-session');
-const passport = require('passport');
-const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
-const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database('./users.db');
-const fs = require('fs')
-const https = require('https')
-const uuidv4 = require('uuid/v4');
+// Module requirements.
+const methodOverride = require("method-override");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+const flash = require("express-flash");
+const passport = require("passport");
+const express = require("express");
+const sqlite3 = require("sqlite3");
+const uuidv4 = require("uuid/v4");
+const https = require("https")
+const fs = require("fs")
 
-//import code from other files
-const cryptoController = require('./cryptoController.js');
-const passportController = require('./passportController.js');
-const dbController = require('./dbController.js');
+// Own code requirements.
+const passportController = require("./passportController.js");
+const cryptoController = require("./cryptoController.js");
+const dbController = require("./dbController.js");
 
-//set server settings and setup packages 
+// Database file requirements.
+const db = new sqlite3.Database("./users.db");
+
+
+// Set server settings and setup packages.
 const app = express();
 const port = process.env.PORT || 3000;
 
-https.createServer({
-	key: fs.readFileSync('server.key'),
-	cert: fs.readFileSync('server.cert')
-	}, app).listen(port, () => {console.log('Server up at https://localhost:3000/')});
-app.set('view engine', 'ejs'); //sets up ejs as view handler
+// Set viewer engine and file directory.
+app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/views/pages"));
+
+// Set HTTP command parser.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true})); 
-app.use(express.static(__dirname + '/views/pages'));
-app.use(flash());
-app.use(session(
-	{
-		genid: function(req) {
-			return uuidv4() // use UUIDs for session IDs
-		},
-		secret: "a31ec33094189b0b", //generated from random.org
-		resave: false,
-		saveUninitialized: false
-	})); 
 
+// Set project directory.
+app.use(flash());
+
+// Express session setup.
+app.use(session({
+	genid: function(req) {
+		return uuidv4() // use UUIDs for session IDs
+	},
+	secret: "a31ec33094189b0b", //generated from random.org
+	resave: false,
+	saveUninitialized: false
+})); 
+
+// Allow additional HTTP command like DELETE where client doesn't support it.
+app.use(methodOverride("_method"));
+
+// Passport session setup, has to be after express session setup.
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(methodOverride('_method'));
-
 passportController.initialize(passport);
 
-// Get root page.
-app.get('/', isAuthenticated, (req, res) =>
+// Create HTTPS server.
+https.createServer({
+	key: fs.readFileSync("server.key"),
+	cert: fs.readFileSync("server.cert")
+	}, app).listen(port, () => {
+		console.log("Server up at https://localhost:3000/")
+	});
+
+// Redirect root to inbox if authenticated.
+app.get("/", isAuthenticated, (req, res) =>
 {
-	res.redirect('/inbox')
+	res.redirect("/inbox")
 });
 
-// Render inbox from if authenticated.
-app.get('/inbox', isAuthenticated, (req, res) =>
+// Redirect root to login if not authenticated.
+app.get("/", isNotAuthenticated, (req, res) =>
 {
-	res.render('pages/inbox.ejs')
+	res.redirect("/login")
 });
 
-// Render login form if not authenticated.
-app.get('/login', isNotAuthenticated, (req, res) =>
+// Render inbox from login if authenticated.
+app.get("/login", isAuthenticated, (req, res) =>
 {
-	res.render('pages/login.ejs')
+	res.render("pages/inbox.ejs")
 });
 
-// Handler for POST on login.
-app.post('/login', isNotAuthenticated, passport.authenticate('local',
+// Render login from login if not authenticated.
+app.get("/login", isNotAuthenticated, (req, res) =>
 {
-	successRedirect: '/inbox',
-	failureRedirect: '/login',
+	res.render("pages/login.ejs")
+});
+
+// Render register from register if authenticated.
+app.get("/register", isAuthenticated, (req, res) =>
+{
+	res.render("pages/register.ejs")
+});
+
+// Render login from register if not authenticated.
+app.get("/register", isNotAuthenticated, (req, res) =>
+{
+	res.render("pages/login.ejs")
+});
+
+// Render inbox from inbox if authenticated.
+app.get("/inbox", isAuthenticated, (req, res) =>
+{
+	res.render("pages/inbox.ejs")
+});
+
+// Render login from inbox if not authenticated.
+app.get("/inbox", isNotAuthenticated, (req, res) =>
+{
+	res.render("pages/login.ejs")
+});
+
+// Handler for POST on login if not authenticated.
+app.post("/login", isNotAuthenticated, passport.authenticate("local",
+{
+	successRedirect: "/inbox",
+	failureRedirect: "/login",
 	failureFlash: true
 }));
 
-// Render register form if authenticated.
-app.get('/register', isAuthenticated, (req, res) =>
-{
-	res.render('pages/register.ejs')
-});
-
-// Redirect to login form if not authenticated.
-app.get('/register', isNotAuthenticated, (req, res) =>
-{
-	res.render('pages/login.ejs')
-});
-
-
-// Register a user for admins.
+// Handler for POST on register if authenticated.
 app.post("/register", isAuthenticated, (req, res) =>
 {
+	// Get the input from the request body.
 	const input = req.body
+	
+	// Check that password verification matches.
 	if (input.password != input.verify) {
 		res.render("pages/register.ejs", { alert: "Passwords do not match, please try again!" });
 	}
 	else {
+		// Check that there isn't another user already named the same.
 		(dbController.getUserByName(input.username, function callback(err, result) {
 			if (err) {
 				throw err;
 			}
+			// If not, hash password and store user.
 			else {
 				var user = result;
-				if (user == null) {
-					console.log(input.username + ": Username isn't taken");
+				if (!user) {
+					console.log("The username isn't taken.");
 					try {
-						cryptoController.hashPW(input.username, input.password, function callback(err, result) {
+						// Hash password.
+						cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
 							if (err) {
 								throw err;
 							}
 							else {
-								dbController.storeUser(input.username, result);
-								console.log(result);
-								
+								console.log("Password hash: " + result);
+								// Store user.
+								dbController.storeUser(input.username, result, function callback(err, result) {
+									if (err) {
+										throw err;
+									}
+									else {
+										console.log(result)
+									}
+								});
 							}
 						});
 						const data = { alert: "Welcome" + input.username + ", you can now log in." };
@@ -128,10 +173,11 @@ app.post("/register", isAuthenticated, (req, res) =>
 	}
 });
 
-app.delete('/logout', isAuthenticated, (req, res) => 
+// Handler for DELETE to logout.
+app.delete("/logout", isAuthenticated, (req, res) => 
 {
 	req.logOut();
-	res.redirect('/login');
+	res.redirect("/login");
 });
 
 function isAuthenticated(req, res, next)
@@ -140,15 +186,14 @@ function isAuthenticated(req, res, next)
 	{
 		return next();
 	}
-	return res.redirect('/login');
+	return res.redirect("/login");
 }
 
 function isNotAuthenticated(req, res, next)
 {
 	if(req.isAuthenticated())
 	{
-		return res.redirect('/inbox');
+		return res.redirect("/inbox");
 	}
 	next();
 }
-
