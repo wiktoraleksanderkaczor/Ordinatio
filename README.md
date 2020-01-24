@@ -13,6 +13,8 @@ Make sure you have installed NodeJS.
 
 Run the command "npm init" in the project working directory. This is the folder with the "server.js" file.
 This will launch the project setup wizard, accept the defaults except for the entry point, change that to "server.js".
+Next, you should run "node initialisation.js" to set the administrator account.
+Finally, if you want to clear the initialisation, run "node clearInit.js".
 
 ### Run all of the following to install the dependencies:
 ```
@@ -29,6 +31,10 @@ npm install ejs --save
 npm install fs --save
 npm install https --save
 npm install uuid --save
+npm install readline --save
+npm install first-run --save
+npm install role-acl --save
+npm install yesno --save
 ```
 
 You can run "node dbCreate.js" to create the "users.db" database file, this only has to be done once.
