@@ -13,7 +13,6 @@ p,div,input[type=submit],input[type=text],input[type=password],label,form,textar
 h1
 {
 	text-align: center;
-	text-decoration: underline;
 	font-size: 32px;
 	color:#B5B5B5;
 }
