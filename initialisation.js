@@ -59,8 +59,14 @@ const start = async function() {
                                                 throw err;
                                             }
                                             else {
-                                                dbController.storeUser(username, result);
-                                                console.log(result);
+                                                dbController.storeUser(username, result, function callback(err, result) {
+                                                    if (err) {
+                                                        throw err;
+                                                    }
+                                                    else {
+                                                        console.log(result)
+                                                    }
+                                                });
                                                 console.log("The administration account was created successfully.")
                                             }
                                         });

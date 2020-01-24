@@ -17,7 +17,7 @@ const start = async function() {
         // Delete user database.
         await fs.unlink("users.db", function (err) {
             if (err) {
-                throw err;
+                console.log("The users database doesn't exist.")
             }
             else {
                 // The file was deleted successfully.
