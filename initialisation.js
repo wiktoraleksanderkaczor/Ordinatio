@@ -51,8 +51,7 @@ const start = async function() {
                             // If they don't exist, hash the password and store user in database.
                             else {
                                 var user = result;
-                                if (user == null) {
-                                    console.log("The username is not taken.");
+                                if (!user) {
                                     try {
                                         cryptoController.hashPassword(username, password, function callback(err, result) {
                                             if (err) {
@@ -67,7 +66,6 @@ const start = async function() {
                                                         console.log(result)
                                                     }
                                                 });
-                                                console.log("The administration account was created successfully.")
                                             }
                                         });
                                     }
@@ -81,9 +79,7 @@ const start = async function() {
                             }
                         }));
                     }
-
-                    console.log("Initialisation of Ordinatio is complete.");
-                    console.log("You can use Ctrl+C once the message says initialisation is complete.")
+                    console.log("Ordinatio is initialised.");
                 });
             });
         });
@@ -100,5 +96,14 @@ const start = async function() {
     });
 }
 
+function exit() {
+    var t = setTimeout(function() {
+        process.exit(1);
+    }, 10000);
+    // Exit after timeout or event queue is empty.
+    t.unref();
+}
+
 //Entry point.
 start();
+exit();
