@@ -2,7 +2,6 @@
 const methodOverride = require("method-override");
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const flash = require("express-flash");
 const passport = require("passport");
 const express = require("express");
 const sqlite3 = require("sqlite3");
@@ -30,9 +29,6 @@ app.use(express.static(__dirname + "/views/pages"));
 // Set HTTP command parser.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true})); 
-
-// Set project directory.
-app.use(flash());
 
 // Express session setup.
 app.use(session({
@@ -109,6 +105,7 @@ app.post("/register", isAuthenticated, (req, res) =>
 		res.render("pages/register.ejs", { alert: "Passwords do not match, please try again!" });
 	}
 	else {
+		console.log("\n -=- " + input.username + " -=- ");
 		// Check that there isn't another user already named the same.
 		(dbController.getUserByName(input.username, function callback(err, result) {
 			if (err) {
@@ -133,22 +130,21 @@ app.post("/register", isAuthenticated, (req, res) =>
 										throw err;
 									}
 									else {
-										console.log(result)
+										console.log(result);
+										res.render("pages/register.ejs");
 									}
 								});
 							}
 						});
-						const data = { alert: "Welcome" + input.username + ", you can now log in." };
-						res.render("pages/login.ejs", data);
 					}
 					catch (e) {
-						const data = { alert: e.message };
-						res.render("pages/register.ejs", data);
+						console.log(e);
+						res.render("pages/register.ejs");
 					}
 				}
 				else {
-					const data = { alert: "Username is taken, choose another one." };
-					res.render("pages/register.ejs", data);
+					// Username is taken
+					res.render("pages/register.ejs");
 				}
 			}
 		}));
