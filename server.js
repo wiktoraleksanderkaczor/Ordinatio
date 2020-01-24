@@ -72,12 +72,6 @@ app.get("/", isNotAuthenticated, (req, res) =>
 	res.redirect("/login")
 });
 
-// Render inbox from login if authenticated.
-app.get("/login", isAuthenticated, (req, res) =>
-{
-	res.render("pages/inbox.ejs")
-});
-
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {
@@ -90,22 +84,10 @@ app.get("/register", isAuthenticated, (req, res) =>
 	res.render("pages/register.ejs")
 });
 
-// Render login from register if not authenticated.
-app.get("/register", isNotAuthenticated, (req, res) =>
-{
-	res.render("pages/login.ejs")
-});
-
 // Render inbox from inbox if authenticated.
 app.get("/inbox", isAuthenticated, (req, res) =>
 {
 	res.render("pages/inbox.ejs")
-});
-
-// Render login from inbox if not authenticated.
-app.get("/inbox", isNotAuthenticated, (req, res) =>
-{
-	res.render("pages/login.ejs")
 });
 
 // Handler for POST on login if not authenticated.
