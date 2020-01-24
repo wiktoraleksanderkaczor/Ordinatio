@@ -1,42 +1,17 @@
+// Module requirements.
+const bcrypt = require("bcrypt");
 
-const bcrypt = require('bcrypt');
 
-
-async function hashPW(username, plainTextPW, callback) 
-{
-	var hash = await bcrypt.hash(plainTextPW, 10, function(err, hash)
-	{
-		if(err)
-		{
-			throw err;
+// Use BCrypt module to hash password with salt in hash.
+async function hashPassword(username, plainPassword, callback) {
+	var hash = await bcrypt.hash(plainPassword, 10, function(err, hash) {
+		if (err) {
+			callback(err);
 		}
-		else
-		{
+		else {
 			callback(null, hash);
 		}
 	});
 }
 
-async function compareHashPW(username, plainTextPW)
-{	
-	const user = dbController.getUserByName(username)
-	if(user != null)
-	{
-			if (await bcrypt.compare(plainTextPW, user.password))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-	}
-	else
-	{
-		return {alert: "User not found."};
-	}
-}
-
-module.exports.compareHashPW = compareHashPW;
-module.exports.hashPW = hashPW;
-module.exports.storePWHash = storePWHash;
+module.exports.hashPassword = hashPassword;

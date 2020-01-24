@@ -1,50 +1,42 @@
-const sqlite3 = require ('sqlite3');
-const db = new sqlite3.Database('./users.db');
-const serverFunctions = require('./server.js');
+// Module requirements.
+const sqlite3 = require("sqlite3");
 
-function storeUser(username, PWHash)
-{
-	db.run
-	(
-		'INSERT INTO accounts (username, password) VALUES($username, $password)',
-		{
+// Database file requirements.
+const db = new sqlite3.Database("./users.db");
+
+
+// Function to store a user.
+function storeUser(username, passwordHash, callback) {
+	db.run("INSERT INTO accounts (username, password) VALUES($username, $password)", {
 			$username: username,
-			$password: PWHash
-		},
-		(err) =>
-		{
-			if(err != null)
-			{
-				console.log(err.message);
-				throw err;
+			$password: passwordHash
+		}, (err) => {
+			if (err) {
+				callback(err, null);
+			} 
+			else {
+				callback(null, "User stored successfully.");
 			}
-			
 		}
 	);
 }
-module.exports.storeUser = storeUser;
 
-function getUserByName(username, callback)
-{
-		db.get
-		(
-			'SELECT * FROM accounts WHERE USERNAME=$name',
-			{
-				$name: username
-			},
-			(err, row) => 
-			{
-				if(err)
-				{
-					callback(err, null);
-				}
-				else
-				{
-					callback(null, row);
-				}
+// Function to retrieve all users by a username.
+function getUserByName(username, callback) {
+	db.get("SELECT * FROM accounts WHERE USERNAME=$name", {
+			$name: username
+		}, (err, row) => {
+			if (err) {
+				callback(err, null);
 			}
-		);
+			else {
+				callback(null, row);
+			}
+		}
+	);
 }
+
+module.exports.storeUser = storeUser;
 module.exports.getUserByName = getUserByName;
 	
 
