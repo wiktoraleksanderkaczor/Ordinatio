@@ -1,13 +1,14 @@
 // Module requirements.
 const methodOverride = require("method-override");
 const session = require("express-session");
+const AccessControl = require('role-acl');
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const express = require("express");
 const sqlite3 = require("sqlite3");
 const uuidv4 = require("uuid/v4");
-const https = require("https")
-const fs = require("fs")
+const https = require("https");
+const fs = require("fs");
 
 // Own code requirements.
 const passportController = require("./passportController.js");
@@ -53,37 +54,37 @@ https.createServer({
 	key: fs.readFileSync("server.key"),
 	cert: fs.readFileSync("server.cert")
 	}, app).listen(port, () => {
-		console.log("Server up at https://localhost:3000/")
+		console.log("Server up at https://localhost:3000/");
 	});
 
 // Redirect root to inbox if authenticated.
 app.get("/", isAuthenticated, (req, res) =>
 {
-	res.redirect("/inbox")
+	res.redirect("/inbox");
 });
 
 // Redirect root to login if not authenticated.
 app.get("/", isNotAuthenticated, (req, res) =>
 {
-	res.redirect("/login")
+	res.redirect("/login");
 });
 
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {
-	res.render("pages/login.ejs")
+	res.render("pages/login.ejs");
 });
 
 // Render register from register if authenticated.
 app.get("/register", isAuthenticated, (req, res) =>
 {
-	res.render("pages/register.ejs", {info:""})
+	res.render("pages/register.ejs", {info:""});
 });
 
 // Render inbox from inbox if authenticated.
 app.get("/inbox", isAuthenticated, (req, res) =>
 {
-	res.render("pages/inbox.ejs")
+	res.render("pages/main.ejs", { username: req.user.username });
 });
 
 // Handler for POST on login if not authenticated.
