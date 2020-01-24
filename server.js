@@ -77,7 +77,7 @@ app.get("/login", isNotAuthenticated, (req, res) =>
 // Render register from register if authenticated.
 app.get("/register", isAuthenticated, (req, res) =>
 {
-	res.render("pages/register.ejs")
+	res.render("pages/register.ejs", {info:""})
 });
 
 // Render inbox from inbox if authenticated.
@@ -102,7 +102,7 @@ app.post("/register", isAuthenticated, (req, res) =>
 	
 	// Check that password verification matches.
 	if (input.password != input.verify) {
-		res.render("pages/register.ejs", { alert: "Passwords do not match, please try again!" });
+		res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
 	}
 	else {
 		console.log("\n -=- " + input.username + " -=- ");
@@ -131,7 +131,7 @@ app.post("/register", isAuthenticated, (req, res) =>
 									}
 									else {
 										console.log(result);
-										res.render("pages/register.ejs");
+										res.render("pages/register.ejs", {info: "The user was created successfully."});
 									}
 								});
 							}
@@ -139,12 +139,13 @@ app.post("/register", isAuthenticated, (req, res) =>
 					}
 					catch (e) {
 						console.log(e);
-						res.render("pages/register.ejs");
+						res.render("pages/register.ejs", {info: e});
+
 					}
 				}
 				else {
 					// Username is taken
-					res.render("pages/register.ejs");
+					res.render("pages/register.ejs", {info: "The username is taken, try again."});
 				}
 			}
 		}));
