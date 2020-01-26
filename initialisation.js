@@ -58,7 +58,7 @@ const start = async function() {
                                                 throw err;
                                             }
                                             else {
-                                                dbController.storeUser(username, result, function callback(err, result) {
+                                                dbController.storeUser(username, result, "root", function callback(err, result) {
                                                     if (err) {
                                                         throw err;
                                                     }

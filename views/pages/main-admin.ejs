@@ -2,14 +2,17 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="style.css"/>
-		<title>Home</title>
+		<title>Admin</title>
 	</head>
 	<body>
 		<h1>Welcome <%= username %></h1>
-		<p>Dashboard:</p>
+		<p>Admin Page</p>
 		<div>
 			<form id="logOutForm" method="POST" action="/">
 				<input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
+			</form>
+			<form id="registerForm" method="GET" action="/">
+				<input type="submit" value="Register new user" formaction="/register" form="registerForm">
 			</form>
 		</div>
 	</body>

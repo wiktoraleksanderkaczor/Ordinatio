@@ -19,6 +19,40 @@ const dbController = require("./dbController.js");
 const db = new sqlite3.Database("./users.db");
 
 
+// Set up access control object.
+const ac = new AccessControl();
+
+/* 
+	Users can create, delete and read rota and holiday requests.
+	Admins can do what users can and reply to holiday request as well as counter-offer too.
+	Root account can do what admins do and everything else.
+*/
+
+// Grant user permissions.
+ac.grant('user')
+	.execute('create').on('rota-request')
+	.execute('delete').on('rota-request')
+	.execute('read').on('rota-request')
+	.execute('view').on('schedule');
+
+// Create admin role which extends user role.
+ac.grant('admin').extend('user');
+
+// Grant admin permissions.
+ac.grant('admin')
+	.execute('reply').on('rota-request')
+	.execute('counter-offer').on('rota-request')
+	.execute('register').on('register')
+	.execute('assign').on('schedule');
+
+// Create the ultimate administrator account.
+ac.grant('root').extend('admin');
+
+// Grant root permissions.
+ac.grant('root')
+	.execute('delete').on('rota-request')
+	.execute('delete').on('schedule');
+
 // Set server settings and setup packages.
 const app = express();
 const port = process.env.PORT || 3000;
@@ -57,10 +91,10 @@ https.createServer({
 		console.log("Server up at https://localhost:3000/");
 	});
 
-// Redirect root to inbox if authenticated.
+// Redirect root to main if authenticated.
 app.get("/", isAuthenticated, (req, res) =>
 {
-	res.redirect("/inbox");
+	res.redirect("/main");
 });
 
 // Redirect root to login if not authenticated.
@@ -78,19 +112,61 @@ app.get("/login", isNotAuthenticated, (req, res) =>
 // Render register from register if authenticated.
 app.get("/register", isAuthenticated, (req, res) =>
 {
-	res.render("pages/register.ejs", {info:""});
+	//Get role
+	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			// Check if role can do the action.
+			permission = ac.can(role).execute('register').sync().on('register');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root") {
+					res.render("pages/register.ejs", { info: "" });
+				}
+				else {
+					res.render("pages/denied.ejs", { username: req.user.username });
+				}
+			}
+			else {
+				res.render("pages/denied.ejs", { username: req.user.username });
+			}
+		}
+	});
 });
 
-// Render inbox from inbox if authenticated.
-app.get("/inbox", isAuthenticated, (req, res) =>
+// Render main from main if authenticated.
+app.get("/main", isAuthenticated, (req, res) =>
 {
-	res.render("pages/main.ejs", { username: req.user.username });
+	//Get role
+	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			// Check if role can do the action.
+			permission = ac.can(role).execute('view').sync().on('schedule');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root") {
+					res.render("pages/main-admin.ejs", { username: req.user.username });
+				}
+				else {
+					res.render("pages/main.ejs", { username: req.user.username });
+				}
+			}
+			else {
+				res.render("pages/denied.ejs", { username: req.user.username });
+			}
+		}
+	});
 });
 
 // Handler for POST on login if not authenticated.
 app.post("/login", isNotAuthenticated, passport.authenticate("local",
 {
-	successRedirect: "/inbox",
+	successRedirect: "/main",
 	failureRedirect: "/login",
 	failureFlash: true
 }));
@@ -98,59 +174,84 @@ app.post("/login", isNotAuthenticated, passport.authenticate("local",
 // Handler for POST on register if authenticated.
 app.post("/register", isAuthenticated, (req, res) =>
 {
-	// Get the input from the request body.
-	const input = req.body
-	
-	// Check that password verification matches.
-	if (input.password != input.verify) {
-		res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
-	}
-	else {
-		console.log("\n -=- " + input.username + " -=- ");
-		// Check that there isn't another user already named the same.
-		(dbController.getUserByName(input.username, function callback(err, result) {
-			if (err) {
-				throw err;
-			}
-			// If not, hash password and store user.
-			else {
-				var user = result;
-				if (!user) {
-					console.log("The username isn't taken.");
-					try {
-						// Hash password.
-						cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
-							if (err) {
-								throw err;
-							}
-							else {
-								console.log("Password hash: " + result);
-								// Store user.
-								dbController.storeUser(input.username, result, function callback(err, result) {
-									if (err) {
-										throw err;
+	//Get role
+	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err)
+		}
+		else {
+			// Check if role can do the action.
+			permission = ac.can(role).execute('register').sync().on('register');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root") {
+					// Get the input from the request body.
+					const input = req.body;
+					
+					if (input.user === "admin" && role === "admin") {
+						res.render("pages/register.ejs", { info: "Only the root account can create other administrators!" });
+					}
+					else {
+						// Check that password verification matches.
+						if (input.password != input.verify) {
+							res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
+						}
+						else {
+							console.log("\n -=- " + input.username + " -=- ");
+							// Check that there isn't another user already named the same.
+							(dbController.getUserByName(input.username, function callback(err, result) {
+								if (err) {
+									throw err;
+								}
+								// If not, hash password and store user.
+								else {
+									var user = result;
+									if (!user) {
+										console.log("The username isn't taken.");
+										try {
+											// Hash password.
+											cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
+												if (err) {
+													throw err;
+												}
+												else {
+													console.log("Password hash: " + result);
+													// Store user.
+													dbController.storeUser(input.username, result, input.user, function callback(err, result) {
+														if (err) {
+															throw err;
+														}
+														else {
+															console.log(result);
+															res.render("pages/register.ejs", {info: "The user was created successfully."});
+														}
+													});
+												}
+											});
+										}
+										catch (e) {
+											console.log(e);
+											res.render("pages/register.ejs", {info: e});
+										}
 									}
 									else {
-										console.log(result);
-										res.render("pages/register.ejs", {info: "The user was created successfully."});
+										// Username is taken
+										res.render("pages/register.ejs", {info: "The username is taken, try again."});
 									}
-								});
-							}
-						});
-					}
-					catch (e) {
-						console.log(e);
-						res.render("pages/register.ejs", {info: e});
-
+								}
+							}));
+						}
 					}
 				}
 				else {
-					// Username is taken
-					res.render("pages/register.ejs", {info: "The username is taken, try again."});
+					res.render("pages/denied.ejs", { username: req.user.username });
 				}
 			}
-		}));
-	}
+			else {
+				res.render("pages/denied.ejs", { username: req.user.username });
+			}
+		}
+	});
 });
 
 // Handler for DELETE to logout.
@@ -173,7 +274,7 @@ function isNotAuthenticated(req, res, next)
 {
 	if(req.isAuthenticated())
 	{
-		return res.redirect("/inbox");
+		return res.redirect("/main");
 	}
 	next();
 }

@@ -14,7 +14,15 @@
 				<input type="password" name="password" placeholder = "Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
 				<label for="verify">Verify password:</label>
 				<input type="password" name="verify" placeholder = "Verify password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
+				<label for="user">Type of user:</label>
+				<select name="user">
+					<option value="admin">Admin</option>
+					<option value="user" selected>Employee</option>
+				</select>
 				<input type="submit" value="Register">
+			</form>
+			<form id="linksForm" method="GET" action="/main">
+				<input type="submit" value="Go back" formaction="/main" form="linksForm">
 			</form>
 			<h1><%= info %></h1>
 		</div>
