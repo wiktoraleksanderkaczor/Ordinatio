@@ -19,7 +19,6 @@ Finally, if you want to clear the initialisation, run "node clearInit.js".
 ### Run all of the following to install the dependencies:
 ```
 npm install express --save
-npm install express-flash --save
 npm install express-session --save
 npm install passport --save
 npm install passport-local --save
@@ -39,8 +38,6 @@ npm install frappe-gantt --save
 npm install snapsvg --save
 npm install moment --save
 ```
-
-You can run "node dbCreate.js" to create the "users.db" database file, this only has to be done once.
 
 The server can now be ran by running "node server.js".
 You should see the message "Server up" if all went well.
