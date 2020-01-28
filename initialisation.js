@@ -12,8 +12,7 @@ const db = new sqlite3.Database("./users.db")
 
 
 // Variables to hold database creation statements for easier editing.
-const database_statement1 = "CREATE TABLE accounts (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT)"
-const database_statement2 = "CREATE TABLE roles (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, role_name TEXT, permissions JSON1)"
+const database_statement = "CREATE TABLE accounts (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, data JSON1)"
 
 // Creating command line interface for "readline" module.
 const rl = readline.createInterface({
@@ -26,8 +25,7 @@ const start = async function() {
     if (firstRun()) {
         //Initialise database.
         db.serialize(() => {
-            db.run(database_statement1);
-            db.run(database_statement2);
+            db.run(database_statement);
         });
         db.close();
         console.log("Database initialised.");

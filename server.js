@@ -1,7 +1,6 @@
 // Module requirements.
 const methodOverride = require("method-override");
 const session = require("express-session");
-const AccessControl = require('role-acl');
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const express = require("express");
@@ -14,44 +13,11 @@ const fs = require("fs");
 const passportController = require("./passportController.js");
 const cryptoController = require("./cryptoController.js");
 const dbController = require("./dbController.js");
+const acl = require("./accessControl.js");
 
 // Database file requirements.
 const db = new sqlite3.Database("./users.db");
 
-
-// Set up access control object.
-const ac = new AccessControl();
-
-/* 
-	Users can create, delete and read rota and holiday requests.
-	Admins can do what users can and reply to holiday request as well as counter-offer too.
-	Root account can do what admins do and everything else.
-*/
-
-// Grant user permissions.
-ac.grant('user')
-	.execute('create').on('rota-request')
-	.execute('delete').on('rota-request')
-	.execute('read').on('rota-request')
-	.execute('view').on('schedule');
-
-// Create admin role which extends user role.
-ac.grant('admin').extend('user');
-
-// Grant admin permissions.
-ac.grant('admin')
-	.execute('reply').on('rota-request')
-	.execute('counter-offer').on('rota-request')
-	.execute('register').on('register')
-	.execute('assign').on('schedule');
-
-// Create the ultimate administrator account.
-ac.grant('root').extend('admin');
-
-// Grant root permissions.
-ac.grant('root')
-	.execute('delete').on('rota-request')
-	.execute('delete').on('schedule');
 
 // Set server settings and setup packages.
 const app = express();
@@ -119,7 +85,7 @@ app.get("/register", isAuthenticated, (req, res) =>
 		}
 		else {
 			// Check if role can do the action.
-			permission = ac.can(role).execute('register').sync().on('register');
+			permission = acl.ac.can(role).execute('register').sync().on('register');
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if (role === "admin" || role === "root") {
@@ -146,7 +112,7 @@ app.get("/main", isAuthenticated, (req, res) =>
 		}
 		else {
 			// Check if role can do the action.
-			permission = ac.can(role).execute('view').sync().on('schedule');
+			permission = acl.ac.can(role).execute('view').sync().on('schedule');
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if (role === "admin" || role === "root") {
@@ -181,7 +147,7 @@ app.post("/register", isAuthenticated, (req, res) =>
 		}
 		else {
 			// Check if role can do the action.
-			permission = ac.can(role).execute('register').sync().on('register');
+			permission = acl.ac.can(role).execute('register').sync().on('register');
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if (role === "admin" || role === "root") {

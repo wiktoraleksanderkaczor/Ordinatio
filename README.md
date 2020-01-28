@@ -35,6 +35,9 @@ npm install readline --save
 npm install first-run --save
 npm install role-acl --save
 npm install yesno --save
+npm install frappe-gantt --save
+npm install snapsvg --save
+npm install moment --save
 ```
 
 You can run "node dbCreate.js" to create the "users.db" database file, this only has to be done once.

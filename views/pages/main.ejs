@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<meta charset="utf8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css" />
 		<title>Home</title>
 	</head>
 	<body>
@@ -12,5 +14,36 @@
 				<input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
 			</form>
 		</div>
+		<svg id="gantt"></svg>
+		<script src="libs/frappe-gantt.min.js"></script>
+		<script src="libs/snap.svg-min.js"></script>
+		<script src="libs/moment.min.js"></script>
+		<link rel="stylesheet" href="styles/frappe-gantt.css"/>
+		<script>
+			var tasks = [
+  				{
+    				id: 'Task 1',
+    				name: 'Create website',
+    				start: '2016-11-28',
+    				end: '2016-11-31',
+    				progress: 20
+				},{
+					id: 'Task 2',
+    				name: 'Design website',
+    				start: '2016-12-15',
+    				end: '2016-12-25',
+    				progress: 20,
+    				dependencies: 'Task 2'
+				},{
+					id: 'Task 3',
+    				name: 'Redesign website',
+    				start: '2016-12-28',
+    				end: '2016-12-31',
+    				progress: 20,
+    				dependencies: 'Task 2, Task 3'
+				}
+			]
+			var gantt = new Gantt("#gantt", tasks);
+		</script>
 	</body>
 </html>
