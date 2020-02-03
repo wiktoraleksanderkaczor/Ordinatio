@@ -75,6 +75,14 @@ app.get("/login", isNotAuthenticated, (req, res) =>
 	res.render("pages/login.ejs");
 });
 
+// Handler for POST on login if not authenticated.
+app.post("/login", isNotAuthenticated, passport.authenticate("local",
+{
+	successRedirect: "/main",
+	failureRedirect: "/login",
+	failureFlash: true
+}));
+
 // Render register from register if authenticated.
 app.get("/register", isAuthenticated, (req, res) =>
 {
@@ -101,75 +109,6 @@ app.get("/register", isAuthenticated, (req, res) =>
 		}
 	});
 });
-
-// Render main from main if authenticated.
-app.get("/main", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('view').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/main-admin.ejs", { username: req.user.username });
-				}
-				else {
-					dbController.getUserData(req.user.username, function callback(err, res) {
-						if (err) {
-							console.log(err);
-						}
-						else {
-							res.render("pages/main.ejs", { username: req.user.username, data: res });
-						}
-					});
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
-
-// Render assign from assign if authenticated.
-app.get("/assign", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('assign').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/assign.ejs", { info: "" });
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
-
-// Handler for POST on login if not authenticated.
-app.post("/login", isNotAuthenticated, passport.authenticate("local",
-{
-	successRedirect: "/main",
-	failureRedirect: "/login",
-	failureFlash: true
-}));
 
 // Handler for POST on register if authenticated.
 app.post("/register", isAuthenticated, (req, res) =>
@@ -254,11 +193,58 @@ app.post("/register", isAuthenticated, (req, res) =>
 	});
 });
 
-// Handler for DELETE to logout.
-app.delete("/logout", isAuthenticated, (req, res) => 
+// Render main from main if authenticated.
+app.get("/main", isAuthenticated, (req, res) =>
 {
-	req.logOut();
-	res.redirect("/login");
+	//Get role
+	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			// Check if role can do the action.
+			permission = acl.ac.can(role).execute('view').sync().on('schedule');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root") {
+					res.render("pages/main-admin.ejs", { username: req.user.username });
+				}
+				else {
+					res.render("pages/main.ejs", { username: req.user.username });
+				}
+			}
+			else {
+				res.render("pages/denied.ejs", { username: req.user.username });
+			}
+		}
+	});
+});
+
+// Render assign from assign if authenticated.
+app.get("/assign", isAuthenticated, (req, res) =>
+{
+	//Get role
+	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			// Check if role can do the action.
+			permission = acl.ac.can(role).execute('assign').sync().on('schedule');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root") {
+					res.render("pages/assign.ejs", { info: "" });
+				}
+				else {
+					res.render("pages/denied.ejs", { username: req.user.username });
+				}
+			}
+			else {
+				res.render("pages/denied.ejs", { username: req.user.username });
+			}
+		}
+	});
 });
 
 // Handler for POST on register if authenticated.
@@ -299,7 +285,6 @@ app.post("/assign", isAuthenticated, (req, res) =>
 							// Check if empty, if so, insert task in array.
 							if (data === JSON.stringify({})) {
 								parsed = [task];
-								console.log("here");
 							}
 							// If not, assume that it is array, push task to array.
 							else {
@@ -331,6 +316,55 @@ app.post("/assign", isAuthenticated, (req, res) =>
 	}));
 });
 
+app.get("/gantt", isAuthenticated, (req, res) => 
+{
+	//Get role
+	(dbController.getUserRole(req.user.username, function callback(err, role) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			// Check if role can do the action.
+			permission = acl.ac.can(role).execute('view').sync().on('schedule');
+			// Continue if yes, reject if no.
+			if (permission.granted) {	
+				if (role === "admin" || role === "root" || role === "user") {					
+					// Getting data for user to append.
+					(dbController.getUserData(req.user.username, function callback(err, data) {
+						if (err) {
+							console.log(err);
+						}
+						else {
+							// Convert to appropriate format for usage.
+							parsed = JSON.parse(data);
+							// Check if empty, if so, log error.
+							if (data === JSON.stringify({})) {
+								console.log("Error; " + req.user.username + " JSON empty.");
+							}
+							// If not, send to client requsting it.
+							else {
+								res.json(parsed);
+							}
+						}
+					}));
+				}
+				else {
+					res.json({ "error": "Denied access"});
+				}
+			}
+			else {
+				res.json({ "error": "Denied access"});
+			}
+		}
+	}));
+});
+
+// Handler for DELETE to logout.
+app.delete("/logout", isAuthenticated, (req, res) => 
+{
+	req.logOut();
+	res.redirect("/login");
+});
 
 function isAuthenticated(req, res, next)
 {
