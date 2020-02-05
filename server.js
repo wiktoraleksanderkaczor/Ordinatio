@@ -4,19 +4,18 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const express = require("express");
-const sqlite3 = require("sqlite3");
 const uuidv4 = require("uuid/v4");
 const https = require("https");
 const fs = require("fs");
 
 // Own code requirements.
-const passportController = require("./passportController.js");
-const cryptoController = require("./cryptoController.js");
-const dbController = require("./dbController.js");
-const acl = require("./accessControl.js");
+const passportController = require("./own_modules/passportController.js");
 
-// Database file requirements.
-const db = new sqlite3.Database("./users.db");
+// Own actions requirements.
+const register = require("./actions/register.js");
+const assign = require("./actions/assign.js");
+const gantt = require("./actions/gantt.js");
+const main = require("./actions/main.js");
 
 
 // Set server settings and setup packages.
@@ -84,280 +83,21 @@ app.post("/login", isNotAuthenticated, passport.authenticate("local",
 }));
 
 // Render register from register if authenticated.
-app.get("/register", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('register').sync().on('register');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/register.ejs", { info: "" });
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
+app.get("/register", isAuthenticated, register.get);
 
 // Handler for POST on register if authenticated.
-app.post("/register", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err)
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('register').sync().on('register');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					// Get the input from the request body.
-					const input = req.body;
-					
-					if (input.user === "admin" && role === "admin") {
-						res.render("pages/register.ejs", { info: "Only the root account can create other administrators!" });
-					}
-					else {
-						// Check that password verification matches.
-						if (input.password != input.verify) {
-							res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
-						}
-						else {
-							console.log("\n -=- " + input.username + " -=- ");
-							// Check that there isn't another user already named the same.
-							(dbController.getUserByName(input.username, function callback(err, result) {
-								if (err) {
-									throw err;
-								}
-								// If not, hash password and store user.
-								else {
-									var user = result;
-									if (!user) {
-										console.log("The username isn't taken.");
-										try {
-											// Hash password.
-											cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
-												if (err) {
-													throw err;
-												}
-												else {
-													console.log("Password hash: " + result);
-													// Store user.
-													dbController.storeUser(input.username, result, input.user, function callback(err, result) {
-														if (err) {
-															throw err;
-														}
-														else {
-															console.log(result);
-															res.render("pages/register.ejs", {info: "The user was created successfully."});
-														}
-													});
-												}
-											});
-										}
-										catch (e) {
-											console.log(e);
-											res.render("pages/register.ejs", {info: e});
-										}
-									}
-									else {
-										// Username is taken
-										res.render("pages/register.ejs", {info: "The username is taken, try again."});
-									}
-								}
-							}));
-						}
-					}
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
+app.post("/register", isAuthenticated, register.post);
 
 // Render main from main if authenticated.
-app.get("/main", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('view').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/main-admin.ejs", { username: req.user.username });
-				}
-				else {
-					res.render("pages/main.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
+app.get("/main", isAuthenticated, main.get);
 
 // Render assign from assign if authenticated.
-app.get("/assign", isAuthenticated, (req, res) =>
-{
-	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('assign').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/assign.ejs", { info: "" });
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	});
-});
+app.get("/assign", isAuthenticated, assign.get);
 
 // Handler for POST on register if authenticated.
-app.post("/assign", isAuthenticated, (req, res) =>
-{
-	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err)
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('assign').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					// Get the input from the request body.
-					const input = req.body;
+app.post("/assign", isAuthenticated, assign.post);
 
-					// Task definition from inputs.
-					const task = {
-						id: input.username+Date.now(),
-						name: input.choice,
-						start: input.start,
-						end: input.end
-					};
-
-					console.log(task);
-					
-					// Getting data for user to append.
-					(dbController.getUserData(input.username, function callback(err, data) {
-						if (err) {
-							console.log(err);
-						}
-						else {
-							// Convert to appropriate format for storage.
-							parsed = JSON.parse(data);
-							// Check if empty, if so, insert task in array.
-							if (data === JSON.stringify({})) {
-								parsed = [task];
-							}
-							// If not, assume that it is array, push task to array.
-							else {
-								parsed.push(task);
-							}
-							const new_data = JSON.stringify(parsed);
-
-							// Storing task in database for specific user.	
-							(dbController.storeTask(input.username, new_data, function callback(err, result) {
-								if (err) {
-									throw err;
-								}
-								else {
-									console.log(result);
-									res.render("pages/assign.ejs", {info: "The user was assigned the task successfully."});
-								}
-							}));
-						}
-					}));
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
-		}
-	}));
-});
-
-app.get("/gantt", isAuthenticated, (req, res) => 
-{
-	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
-		if (err) {
-			console.log(err);
-		}
-		else {
-			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('view').sync().on('schedule');
-			// Continue if yes, reject if no.
-			if (permission.granted) {	
-				if (role === "admin" || role === "root" || role === "user") {					
-					// Getting data for user to append.
-					(dbController.getUserData(req.user.username, function callback(err, data) {
-						if (err) {
-							console.log(err);
-						}
-						else {
-							// Convert to appropriate format for usage.
-							parsed = JSON.parse(data);
-							// Check if empty, if so, log error.
-							if (data === JSON.stringify({})) {
-								console.log("Error; " + req.user.username + " JSON empty.");
-							}
-							// If not, send to client requsting it.
-							else {
-								res.json(parsed);
-							}
-						}
-					}));
-				}
-				else {
-					res.json({ "error": "Denied access"});
-				}
-			}
-			else {
-				res.json({ "error": "Denied access"});
-			}
-		}
-	}));
-});
+app.get("/gantt", isAuthenticated, gantt.getData);
 
 // Handler for DELETE to logout.
 app.delete("/logout", isAuthenticated, (req, res) => 

@@ -1,8 +1,9 @@
 // Module requirements.
 const sqlite3 = require("sqlite3");
+const path = require("path");
 
 // Database file requirements.
-const db = new sqlite3.Database("./users.db");
+const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
 
 
 // Function to store a user.

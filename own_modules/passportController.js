@@ -3,9 +3,10 @@ const LocalStrategy = require("passport-local").Strategy
 const passport = require("passport");
 const sqlite3 = require("sqlite3");
 const bcrypt = require("bcrypt");
+const path = require("path");
 
 // Database file requirements.
-const db = new sqlite3.Database("./users.db");
+const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
 
 
 // Initialise passport with local authentication strategy.
