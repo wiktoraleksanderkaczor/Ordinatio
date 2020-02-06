@@ -1,22 +1,41 @@
 // Module requirements.
 const sqlite3 = require("sqlite3");
+const path = require("path");
 
 // Database file requirements.
-const db = new sqlite3.Database("./users.db");
+const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
 
 
 // Function to store a user.
 function storeUser(username, passwordHash, role, callback) {
-	db.run("INSERT INTO accounts (username, password, role) VALUES($username, $password, $role)", {
+	empty_data = JSON.stringify({});
+	db.run("INSERT INTO accounts (username, password, role, data) VALUES($username, $password, $role, $data)", {
 			$username: username,
 			$password: passwordHash,
-			$role: role
+			$role: role,
+			$data: empty_data
 		}, (err) => {
 			if (err) {
 				callback(err, null);
 			} 
 			else {
 				callback(null, "User stored successfully.");
+			}
+		}
+	);
+}
+
+// Function to store a rota or holiday.
+function storeTask(username, task, callback) {
+	db.run("UPDATE accounts SET data=$input WHERE username=$name;", {
+			$input: task,
+			$name: username,
+		}, (err) => {
+			if (err) {
+				callback(err, null);
+			} 
+			else {
+				callback(null, "Rota or holiday stored successfully.");
 			}
 		}
 	);
@@ -52,8 +71,25 @@ function getUserRole(username, callback) {
 	);
 }
 
+// Function to retrieve "data" by a username.
+function getUserData(username, callback) {
+	db.get("SELECT data FROM accounts WHERE USERNAME=$name", {
+			$name: username
+		}, (err, row) => {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, row.data);
+			}
+		}
+	);
+}
+
 module.exports.storeUser = storeUser;
+module.exports.storeTask = storeTask;
 module.exports.getUserByName = getUserByName;
 module.exports.getUserRole = getUserRole;
+module.exports.getUserData = getUserData;
 
 	

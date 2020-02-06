@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
+		<title>Ordinatio</title>
+	</head>
+	<body>
+		<div>
+			<h1>Ordinatio Rota Assignment Page</h1>
+            <form id="assignForm" method="POST" action="/assign">
+                <!-- User to assign rota or holiday to -->
+				<label for="username">Username:</label>
+                <input type="text" name="username" placeholder="Username" required pattern="^[A-Za-z0-9]{1,12}$" title="Username may only contain letters and numbers and be no more than 12 characters long.">
+                
+                <!-- Start and end dates for rota or holiday -->
+                <label for="username">Start date:</label>
+                <input type="date" name="start">
+                <label for="username">End date:</label>
+                <input type="date" name="end">
+
+                <br>
+
+                <!-- Rota or holiday choice -->
+                <label for="choice">Rota or Holiday:</label>
+				<select name="choice">
+					<option value="holiday">Holiday</option>
+					<option value="rota" selected>Rota</option>
+                </select>
+                
+				<input type="submit" value="Assign">
+            </form>
+            
+			<form id="linksForm" method="GET" action="/main">
+				<input type="submit" value="Go back" formaction="/main" form="linksForm">
+            </form>
+            
+			<h1><%= info %></h1>
+		</div>
+	</body>
+</html>

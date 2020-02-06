@@ -20,30 +20,18 @@
 		<script src="libs/moment.min.js"></script>
 		<link rel="stylesheet" href="styles/frappe-gantt.css"/>
 		<script>
-			var tasks = [
-  				{
-    				id: 'Task 1',
-    				name: 'Create website',
-    				start: '2016-11-28',
-    				end: '2016-11-31',
-    				progress: 20
-				},{
-					id: 'Task 2',
-    				name: 'Design website',
-    				start: '2016-12-15',
-    				end: '2016-12-25',
-    				progress: 20,
-    				dependencies: 'Task 2'
-				},{
-					id: 'Task 3',
-    				name: 'Redesign website',
-    				start: '2016-12-28',
-    				end: '2016-12-31',
-    				progress: 20,
-    				dependencies: 'Task 2, Task 3'
-				}
-			]
-			var gantt = new Gantt("#gantt", tasks);
+			// Fetch JSON data from server
+			fetch('./gantt')
+			.then(response => {
+				return response.json();
+			})
+			.then(data => {
+				// Use the data to add task to Gantt chart.
+				var gantt = new Gantt("#gantt", data);
+			})
+			.catch(err => {
+				console.log("Error with fetching Gantt chart data.");
+			});
 		</script>
 	</body>
 </html>

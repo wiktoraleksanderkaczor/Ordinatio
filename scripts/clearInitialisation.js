@@ -1,6 +1,7 @@
 // Module requirements.
 const firstRun = require("first-run");
-const yesno = require("yesno");   
+const yesno = require("yesno"); 
+const path = require("path");  
 const fs = require("fs");
 
 
@@ -15,7 +16,7 @@ const start = async function() {
         console.log("Cleared first run variable.")
 
         // Delete user database.
-        await fs.unlink("users.db", function (err) {
+        await fs.unlink(path.join(__dirname, "..", "database", "users.db"), function (err) {
             if (err) {
                 console.log("The users database doesn't exist.")
             }

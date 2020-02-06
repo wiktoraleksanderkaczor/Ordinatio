@@ -2,13 +2,14 @@
 const firstRun = require("first-run");
 const readline = require("readline");
 const sqlite3 = require("sqlite3");
+const path = require("path")
 
 // Own code requirements.
-const cryptoController = require("./cryptoController.js");
-const dbController = require("./dbController.js");
+const cryptoController = require("../own_modules/cryptoController.js");
+const dbController = require("../own_modules/dbController.js");
 
 // Database file requirements.
-const db = new sqlite3.Database("./users.db")
+const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"))
 
 
 // Variables to hold database creation statements for easier editing.
