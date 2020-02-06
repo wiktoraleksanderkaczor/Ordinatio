@@ -1,5 +1,6 @@
 // Module requirements.
 const methodOverride = require("method-override");
+const uniqueString = require('unique-string');
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const passport = require("passport");
@@ -13,8 +14,9 @@ const passportController = require("./own_modules/passportController.js");
 
 // Own actions requirements.
 const register = require("./actions/register.js");
+const request = require("./actions/request.js");
+const data = require("./actions/data_api.js");
 const assign = require("./actions/assign.js");
-const gantt = require("./actions/gantt.js");
 const main = require("./actions/main.js");
 
 
@@ -35,7 +37,7 @@ app.use(session({
 	genid: function(req) {
 		return uuidv4() // use UUIDs for session IDs
 	},
-	secret: "a31ec33094189b0b", //generated from random.org
+	secret: uniqueString(),
 	resave: false,
 	saveUninitialized: false
 })); 
@@ -50,8 +52,8 @@ passportController.initialize(passport);
 
 // Create HTTPS server.
 https.createServer({
-	key: fs.readFileSync("server.key"),
-	cert: fs.readFileSync("server.cert")
+	key: fs.readFileSync("./keys/server.key"),
+	cert: fs.readFileSync("./keys/server.cert")
 	}, app).listen(port, () => {
 		console.log("Server up at https://localhost:3000/");
 	});
@@ -97,7 +99,17 @@ app.get("/assign", isAuthenticated, assign.get);
 // Handler for POST on register if authenticated.
 app.post("/assign", isAuthenticated, assign.post);
 
-app.get("/gantt", isAuthenticated, gantt.getData);
+// Send JSON gantt chart data if authenticated.
+app.get("/gantt", isAuthenticated, data.gantt);
+
+// Send JSON request data if authenticated.
+app.get("/rota_requests", isAuthenticated, data.requests);
+
+// Render request from request if authenticated.
+app.get("/request", isAuthenticated, request.get);
+
+// Handler for POST on request if authenticated.
+app.post("/request", isAuthenticated, request.post);
 
 // Handler for DELETE to logout.
 app.delete("/logout", isAuthenticated, (req, res) => 

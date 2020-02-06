@@ -12,15 +12,10 @@ function get(req, res) {
 		}
 		else {
 			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('register').sync().on('register');
+			permission = acl.ac.can(role).execute("register").sync().on("register");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/register.ejs", { info: "" });
-				}
-				else {
-					res.render("pages/denied.ejs", { username: req.user.username });
-				}
+				res.render("pages/register.ejs", { info: "" });
 			}
 			else {
 				res.render("pages/denied.ejs", { username: req.user.username });
@@ -37,7 +32,7 @@ function post(req, res) {
 		}
 		else {
 			// Check if role can do the action.
-			permission = acl.ac.can(role).execute('register').sync().on('register');
+			permission = acl.ac.can(role).execute("register").sync().on("register");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if (role === "admin" || role === "root") {

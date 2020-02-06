@@ -13,7 +13,7 @@ const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db
 
 
 // Variables to hold database creation statements for easier editing.
-const database_statement = "CREATE TABLE accounts (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, data JSON1)"
+const database_statement = "CREATE TABLE accounts (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, tasks JSON1, requests JSON1)"
 
 // Creating command line interface for "readline" module.
 const rl = readline.createInterface({

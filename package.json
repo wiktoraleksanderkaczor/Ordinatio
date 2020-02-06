@@ -35,6 +35,7 @@
     "role-acl": "^4.3.2",
     "snapsvg": "^0.5.1",
     "sqlite3": "^4.1.1",
+    "unique-string": "^2.0.0",
     "uuid": "^3.4.0",
     "yesno": "^0.3.1"
   }

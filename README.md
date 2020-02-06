@@ -37,6 +37,7 @@ npm install yesno --save
 npm install frappe-gantt --save
 npm install snapsvg --save
 npm install moment --save
+npm install unique-string --save
 ```
 
 The server can now be ran by running "node server.js".

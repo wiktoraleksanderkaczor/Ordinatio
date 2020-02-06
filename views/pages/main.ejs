@@ -13,6 +13,9 @@
 			<form id="logOutForm" method="POST" action="/">
 				<input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
 			</form>
+			<form id="requestForm" method="GET" action="/"> 
+				<input type="submit" value="Request rota or holiday." formaction="/request" form="requestForm"> 
+			</form>
 		</div>
 		<svg id="gantt"></svg>
 		<script src="libs/frappe-gantt.min.js"></script>
