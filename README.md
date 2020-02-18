@@ -18,6 +18,7 @@ Finally, if you want to clear the initialisation, run "node clearInit.js".
 
 ### Run all of the following to install the dependencies:
 ```
+npm install node-gyp --save
 npm install express --save
 npm install express-session --save
 npm install passport --save

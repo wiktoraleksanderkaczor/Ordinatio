@@ -1,4 +1,5 @@
 #!/bin/bash
+npm install node-gyp --save
 npm install express --save
 npm install express-session --save
 npm install passport --save
