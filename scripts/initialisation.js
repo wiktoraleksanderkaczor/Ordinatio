@@ -1,19 +1,11 @@
 // Module requirements.
 const firstRun = require("first-run");
 const readline = require("readline");
-const sqlite3 = require("sqlite3");
-const path = require("path")
 
 // Own code requirements.
 const cryptoController = require("../own_modules/cryptoController.js");
 const dbController = require("../own_modules/dbController.js");
 
-// Database file requirements.
-const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"))
-
-
-// Variables to hold database creation statements for easier editing.
-const database_statement = "CREATE TABLE accounts (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, tasks JSON1, requests JSON1)"
 
 // Creating command line interface for "readline" module.
 const rl = readline.createInterface({
@@ -24,9 +16,8 @@ const rl = readline.createInterface({
 const start = async function() {
     // If application running for the first time.
     if (firstRun()) {
-        //Initialise database.
-        db.initialise();
-        db.close();
+        // Initialise database.
+        dbController.initialise();
         console.log("Database initialised.");
 
         // Prompt for new administator username and password.
