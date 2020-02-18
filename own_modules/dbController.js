@@ -6,6 +6,13 @@ const path = require("path");
 const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
 
 
+// Function to initialise the database 
+function initialise() { 
+	db.serialize(() => { 
+		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, tasks JSON1, requests JSON1)");
+	});
+}
+
 // Function to store a user.
 function storeUser(username, passwordHash, role, callback) {
 	empty_data = JSON.stringify({});
@@ -118,6 +125,7 @@ function getUserRequests(username, callback) {
 	);
 }
 
+module.exports.initialise = initialise;
 module.exports.storeUser = storeUser;
 module.exports.storeTask = storeTask;
 module.exports.storeRequest = storeRequest;

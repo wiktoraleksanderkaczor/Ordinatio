@@ -25,9 +25,7 @@ const start = async function() {
     // If application running for the first time.
     if (firstRun()) {
         //Initialise database.
-        db.serialize(() => {
-            db.run(database_statement);
-        });
+        db.initialise();
         db.close();
         console.log("Database initialised.");
 
