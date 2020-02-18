@@ -39,6 +39,7 @@ npm install snapsvg --save
 npm install moment --save
 npm install unique-string --save
 ```
+Alternatively, run "bash scripts/install_packages.sh".
 
 The server can now be ran by running "node server.js".
 You should see the message "Server up" if all went well.
