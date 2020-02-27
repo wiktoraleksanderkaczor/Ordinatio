@@ -3,7 +3,8 @@ const sqlite3 = require("sqlite3");
 const path = require("path");
 
 // Database file requirements.
-const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
+const dbPath = path.join(__dirname, "..", "database", "users.db");
+const db = new sqlite3.Database(dbPath);
 
 
 // Function to initialise the database 

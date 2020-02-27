@@ -1,4 +1,3 @@
-#!/bin/bash
 npm install fs --save
 npm install https --save
 npm install readline --save
