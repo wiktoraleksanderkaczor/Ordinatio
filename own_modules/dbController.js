@@ -10,19 +10,21 @@ const db = new sqlite3.Database(dbPath);
 // Function to initialise the database 
 function initialise() { 
 	db.serialize(() => { 
-		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT, password TEXT, role TEXT, tasks JSON1, requests JSON1)");
+		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, email TEXT, password TEXT, role TEXT)");
+		db.run("CREATE TABLE requests(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateTimeStart TEXT, dateTimeEnd TEXT)");
+		db.run("CREATE TABLE shifts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateTimeStart TEXT, dateTimeEnd TEXT)");
+		db.run("CREATE TABLE holidays(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateStart TEXT, dateEnd TEXT)");
 	});
 }
 
 // Function to store a user.
-function storeUser(username, passwordHash, role, callback) {
-	empty_data = JSON.stringify({});
-	db.run("INSERT INTO accounts (username, password, role, tasks, requests) VALUES($username, $password, $role, $tasks, $requests)", { 
-		$username: username, 
+function storeUser(firstName, surname, email, passwordHash, role, callback) {
+	db.run("INSERT INTO accounts (firstName, surname, email, password, role) VALUES($firstName, $surname, $email, $password, $role)", { 
+		$firstName: firstName,
+		$surname: surname,
+		$email: email,
 		$password: passwordHash, 
 		$role: role, 
-		$tasks: empty_data, 
-		$requests: empty_data 
 		}, (err) => {
 			if (err) {
 				callback(err, null);
@@ -34,57 +36,148 @@ function storeUser(username, passwordHash, role, callback) {
 	);
 }
 
-// Function to store a rota or holiday.
-function storeTask(username, task, callback) {
-	db.run("UPDATE accounts SET tasks=$input WHERE username=$name;", {
-			$input: task,
-			$name: username,
+//function to delete a user from the database by their id
+function deleteUser(id, callback) {
+	db.run("DELETE FROM accounts WHERE id=$id", {
+		$id:id
+	}, (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("User " + id + " deleted from the database.");
+		}
+	});
+}
+
+// Function to store a request in database
+function storeRequest(employeeId, type, dateTimeSubmitted, dateTimeStart, dateTimeEnd, callback) {
+	db.run("INSERT INTO requests (employeeId, type, dateTimeSubmitted, dateTimeStart, dateTimeEnd) VALUES($employeeId, $type, $dateTimeSubmitted, $dateTimeStart, $dateTimeEnd)", {
+			$employeeId: employeeId,
+			$type: type,
+			$dateTimeSubmitted: dateTimeSubmitted,
+			$dateTimeStart: dateTimeStart,
+			$dateTimeEnd: dateTimeEnd
 		}, (err) => {
 			if (err) {
 				callback(err, null);
 			} 
 			else {
-				callback(null, "Rota or holiday stored successfully.");
+				callback(null, "New request submitted.");
 			}
 		}
 	);
 }
 
-// Function to store a rota or holiday request.
-function storeRequest(username, request, callback) {
-	db.run("UPDATE accounts SET requests=$input WHERE username=$name;", {
-			$input: request,
-			$name: username,
+//Function to cancel (delete) a request from the database
+function deleteRequest(id, callback) {
+	db.run("DELETE FROM requests WHERE id=$id", {
+		$id:id
+	} (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("Request " +id " cancelled.");
+		}
+	});
+}
+
+// Function to store a shift in database.
+function storeShift(employeeId, dateTimeStart, dateTimeEnd) {
+	db.run("INSERT INTO shifts (employeeId, dateTimeStart, dateTimeEnd) VALUES($employeeId, $dateTimeStart, $dateTimeEnd)", {
+			$employeeId = employeeId,
+			$dateTimeStart = dateTimeStart,
+			$dateTimeEnd = dateTimeEnd
 		}, (err) => {
 			if (err) {
 				callback(err, null);
 			} 
 			else {
-				callback(null, "Rota or holiday request stored successfully.");
+				callback(null, "New shift for employee #" + employeeId + " stored.");
 			}
 		}
 	);
 }
 
-// Function to retrieve all users by a username.
-function getUserByName(username, callback) {
-	db.get("SELECT * FROM accounts WHERE USERNAME=$name", {
-			$name: username
-		}, (err, row) => {
-			if (err) {
-				callback(err, null);
-			}
-			else {
-				callback(null, row);
-			}
+//Function to cancel (delete) a shift
+function deleteShift(id, callback) {
+	db.run("DELETE FROM shifts WHERE id=$id", {
+		$id:id
+	} (err) => {
+		if(err) {
+			callback(err);
 		}
-	);
+		else {
+			callback("Shift #" +id " cancelled.");
+		}
+	});
 }
 
-// Function to retrieve all users by a username. 
-function getUserRole(username, callback) { 
-	db.get("SELECT role FROM accounts WHERE USERNAME=$name", { 
-			$name: username 
+//Function to store a holiday in the database by user id
+function storeHoliday(employeeId, dateStart, dateEnd, callback) {
+	db.run("INSERT INTO holidays (employeeId, dateStart, dateEnd) VALUES($employeeId, dateStart, dateEnd)", {
+		$employeeId: employeeId,
+		$dateStart: dateStart,
+		$dateEnd: dateEnd
+	}, (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("New holiday for employee #" + employeeId + " stored.");
+		}
+	});
+}
+
+//Function to delete holiday from the system
+function deleteHoliday(id, callback) {
+	db.run("DELETE FROM holidays WHERE id=$id", {
+		$id:id
+	} (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("Holiday #" +id " cancelled.");
+		}
+	});
+}
+
+//Function to retrieve user by user id
+function getUserById(id, callback) {
+	db.get("SELECT * FROM accounts WHERE id=$id", { 
+			$id: id
+		}, (err, row) => { 
+			if (err) { 
+				callback(err, null); 
+			} 
+			else { 
+				callback(null, row); 
+			} 
+		} 
+	); 
+}
+
+//Function to retrieve user by email
+function getUserByEmail(email, callback) {
+	db.get("SELECT * FROM accounts WHERE id=$id", { 
+		$id: id
+		}, (err, row) => { 
+			if (err) { 
+				callback(err, null); 
+			} 
+			else { 
+				callback(null, row); 
+			} 
+		} 
+	); 
+}
+
+// Function to retrieve user role by user id
+function getUserRole(id, callback) { 
+	db.get("SELECT role FROM accounts WHERE id=$id", { 
+			$id: id
 		}, (err, row) => { 
 			if (err) { 
 				callback(err, null); 
@@ -96,35 +189,138 @@ function getUserRole(username, callback) {
 	); 
 } 
 
-// Function to retrieve "tasks" by a username. 
-function getUserTasks(username, callback) { 
-	db.get("SELECT tasks FROM accounts WHERE USERNAME=$name", { 
-			$name: username 
-		}, (err, row) => { 
-			if (err) { 
-				callback(err, null); 
-			} 
-			else { 
-				callback(null, row.tasks); 
-			} 
-		} 
-	); 
-} 
- 
-// Function to retrieve "requests" by a username. 
-function getUserRequests(username, callback) { 
-	db.get("SELECT requests FROM accounts WHERE USERNAME=$name", { 
-			$name: username
-		}, (err, row) => {
+//Function to retrieve a user's requests by their id
+function getUserRequests(id, callback) {
+	db.all("SELECT * FROM requets INNER JOIN accounts ON requests.employeeId = accounts.id WHERE id=$id", {
+			$id: id
+		}, (err, rows) => {
 			if (err) {
 				callback(err, null);
 			}
 			else {
-				callback(null, row.requests);
+				callback(null, rows);
 			}
 		}
 	);
 }
+ 
+//Function to retrieve a user's shifts by their id
+function getUserRequests(id, callback) {
+	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE id=$id", {
+		$id:id
+		}, (err, rows) => {
+			if (err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, rows);
+			}
+		}
+	);
+}
+
+//Function to delete all of a user's requests 
+function deleteAllUserRequests(employeeId, callback) {
+	db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE employeeId=$employeeId", {
+		$employeeId: employeeId
+	}, (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("All requests cancelled.");
+		}
+	});
+}
+
+//Function to delete all of a user's shifts
+function deleteAllUserShifts(employeeId, callback) {
+	db.run("DELETE * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE employeeId=$employeeId", {
+		$employeeId: employeeId
+	}, (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("All shifts for employee #" + employeeId + " cancelled.");
+		}
+	});
+}
+
+//Function to delete all of a user's holidays
+function deleteAllUserHolidays(employeeId, callback) {
+	db.run("DELETE * FROM holidays INNER JOIN accounts ON holidays.employeeId = accounts.id WHERE employeeId=$employeeId", {
+		$employeeId: employeeId
+	}, (err) => {
+		if(err) {
+			callback(err);
+		}
+		else {
+			callback("All holidays for employee #" + employeeId + " cancelled.");
+		}
+	});
+}
+
+//Function to retrieve all pending requests on the system
+function getAllRequests(callback) {
+	db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
+}
+
+//Function to retrieve only shift requests from the system
+function getAllShiftRequests(callback) {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE type='shift'", (err, rows) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
+}
+
+//Function to retrieve only holiday requests from the system
+function getAllShiftRequests(callback) {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE type='holiday'", (err, rows) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
+}
+
+//Function to retrieve all shifts on the system
+function getAllShifts(callback) {
+	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
+}
+
+//Function to retrieve all holidays on the system
+function getAllHolidays(callback) {
+	db.all("SELECT * FROM holidays INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
+}
+
 
 module.exports.initialise = initialise;
 module.exports.storeUser = storeUser;
