@@ -30,8 +30,8 @@ function initialize(passport) {
 }
 
 // Define local authentication function.
-function authenticateUser(username, password, done) {
-	db.get("SELECT * FROM accounts WHERE username=$username", {$username:username}, function(err, row) {  
+function authenticateUser(email, password, done) {
+	db.get("SELECT * FROM accounts WHERE email=$email", {$email:email}, function(err, row) {  
 		if (err) {
 			throw err;
 		}
