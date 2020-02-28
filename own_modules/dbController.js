@@ -25,7 +25,7 @@ function storeUser(firstName, surname, jobTitle, email, passwordHash, role, call
 		$jobTitle: jobTitle,
 		$email: email,
 		$password: passwordHash, 
-		$role: role, 
+		$role: role
 		}, (err) => {
 			if (err) {
 				callback(err, null);
@@ -206,7 +206,7 @@ function getUserRequests(id, callback) {
 }
  
 //Function to retrieve a user's shifts by their id
-function getUserRequests(id, callback) {
+function getUserShifts(id, callback) {
 	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE id=$id", {
 		$id:id
 		}, (err, rows) => {
@@ -287,7 +287,7 @@ function getAllShiftRequests(callback) {
 }
 
 //Function to retrieve only holiday requests from the system
-function getAllShiftRequests(callback) {
+function getAllHolidayRequests(callback) {
 		db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE type='holiday'", (err, rows) => {
 		if(err) {
 			callback(err, null);
@@ -323,12 +323,26 @@ function getAllHolidays(callback) {
 }
 
 
-module.exports.initialise = initialise;
-module.exports.storeUser = storeUser;
-module.exports.storeTask = storeTask;
-module.exports.storeRequest = storeRequest;
-module.exports.getUserByName = getUserByName;
-module.exports.getUserRole = getUserRole;
-module.exports.getUserTasks = getUserTasks; 
+module.exports.getAllHolidays = getAllHolidays;
+module.exports.getAllShifts = getAllShifts;
+module.exports.getAllHolidayRequests = getAllHolidayRequests;
+module.exports.getAllShiftRequests = getAllShiftRequests;
+module.exports.getAllRequests = getAllRequests;
+module.exports.deleteAllUserHolidays = deleteAllUserHolidays;
+module.exports.deleteAllUserShifts = deleteAllUserShifts;
+module.exports.deleteAllUserRequests = deleteAllUserRequests;
+module.exports.getUserShifts = getUserShifts;
 module.exports.getUserRequests = getUserRequests;
+module.exports.getUserRole = getUserRole;
+module.exports.getUserByEmail = getUserByEmail;
+module.exports.getUserById = getUserById;
+module.exports.deleteHoliday = deleteHoliday;
+module.exports.storeHoliday = storeHoliday;
+module.exports.deleteShift = deleteShift;
+module.exports.storeShift = storeShift;
+module.exports.deleteRequest = deleteRequest;
+module.exports.storeRequest = storeRequest;
+module.exports.deleteUser = deleteUser;
+module.exports.storeUser = storeUser;
+module.exports.initialise = initialise;
 	
