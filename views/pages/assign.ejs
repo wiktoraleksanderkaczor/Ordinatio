@@ -11,22 +11,27 @@
 			<h1>Ordinatio Rota Assignment Page</h1>
             <form id="assignForm" method="POST" action="/assign">
                 <!-- User to assign rota or holiday to -->
-				<label for="username">Username:</label>
-                <input type="text" name="username" placeholder="Username" required pattern="^[A-Za-z0-9]{1,12}$" title="Username may only contain letters and numbers and be no more than 12 characters long.">
+				<label for="EmployeeId">Employee ID</label>
+                <input type="text" name="EmployeeId" placeholder="Employee ID" pattern="\d" title="Enter employee's ID" required>
                 
                 <!-- Start and end dates for rota or holiday -->
-                <label for="start">Start date:</label>
-                <input type="date" name="start">
-                <label for="end">End date:</label>
-                <input type="date" name="end">
+                <label for="startDate">Start date:</label>
+                <input type="date" name="startDate" required>
+				<label for="startTime">Start Time:</label>
+				<input type="time" name="startTime">
+                <label for="endDate">End date:</label>
+                <input type="date" name="endDate" required>
+				<label for="endTime">End Time:</label>
+				<input type="time" name="endTime">
+				
 
                 <br>
 
                 <!-- Rota or holiday choice -->
-                <label for="choice">Rota or Holiday:</label>
-				<select name="choice">
+                <label for="type">Shift or Holiday:</label>
+				<select name="type">
 					<option value="holiday">Holiday</option>
-					<option value="rota" selected>Rota</option>
+					<option value="shift"selected>Shift</option>
                 </select>
                 
 				<input type="submit" value="Assign">
