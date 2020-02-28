@@ -19,4 +19,5 @@ npm install snapsvg --save
 npm install sqlite3 --save
 npm install unique-string --save
 npm install uuid --save
+npm install validator --save
 npm install yesno --save
