@@ -19,7 +19,7 @@ function initialise() {
 
 // Function to store a user.
 function storeUser(firstName, surname, jobTitle, email, passwordHash, role, callback) {
-	db.run("INSERT INTO accounts (firstName, surname, jobTitle, email, password, role) VALUES($firstName, $surname, $email, $password, $role)", { 
+	db.run("INSERT INTO accounts (firstName, surname, jobTitle, email, password, role) VALUES($firstName, $surname, $jobTitle, $email, $password, $role)", { 
 		$firstName: firstName,
 		$surname: surname,
 		$jobTitle: jobTitle,
@@ -74,12 +74,12 @@ function storeRequest(employeeId, type, dateTimeSubmitted, dateTimeStart, dateTi
 function deleteRequest(id, callback) {
 	db.run("DELETE FROM requests WHERE id=$id", {
 		$id:id
-	} (err) => {
+	}, (err) => {
 		if(err) {
 			callback(err);
 		}
 		else {
-			callback("Request " +id " cancelled.");
+			callback("Request " + id +" cancelled.");
 		}
 	});
 }
@@ -87,9 +87,9 @@ function deleteRequest(id, callback) {
 // Function to store a shift in database.
 function storeShift(employeeId, dateTimeStart, dateTimeEnd) {
 	db.run("INSERT INTO shifts (employeeId, dateTimeStart, dateTimeEnd) VALUES($employeeId, $dateTimeStart, $dateTimeEnd)", {
-			$employeeId = employeeId,
-			$dateTimeStart = dateTimeStart,
-			$dateTimeEnd = dateTimeEnd
+			$employeeId: employeeId,
+			$dateTimeStart: dateTimeStart,
+			$dateTimeEnd: dateTimeEnd
 		}, (err) => {
 			if (err) {
 				callback(err, null);
@@ -105,12 +105,12 @@ function storeShift(employeeId, dateTimeStart, dateTimeEnd) {
 function deleteShift(id, callback) {
 	db.run("DELETE FROM shifts WHERE id=$id", {
 		$id:id
-	} (err) => {
+	}, (err) => {
 		if(err) {
 			callback(err);
 		}
 		else {
-			callback("Shift #" +id " cancelled.");
+			callback("Shift #" +id +" cancelled.");
 		}
 	});
 }
@@ -135,12 +135,12 @@ function storeHoliday(employeeId, dateStart, dateEnd, callback) {
 function deleteHoliday(id, callback) {
 	db.run("DELETE FROM holidays WHERE id=$id", {
 		$id:id
-	} (err) => {
+	}, (err) => {
 		if(err) {
 			callback(err);
 		}
 		else {
-			callback("Holiday #" +id " cancelled.");
+			callback("Holiday #" +id +" cancelled.");
 		}
 	});
 }

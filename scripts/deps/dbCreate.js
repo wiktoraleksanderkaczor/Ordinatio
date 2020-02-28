@@ -9,7 +9,7 @@ const cryptoController = require(path.join(__dirname, "..", "..", "own_modules",
 
 
 // Database file path constant.
-const dbPath = path.join(__dirname, "..", "database", "users.db");
+const dbPath = path.join(__dirname, "..", "..", "database", "users.db");
 
 // Set up password schema for "password-validator" module.
 var schema = new validator();
@@ -36,7 +36,7 @@ const initialiseDb = async function () {
 		}
 		else {
 			// Prompt the user for new username and password 
-			rl.question("\nEnter email address for the Adminstrator account:\n", function (username) {
+			rl.question("\nEnter email address for the Adminstrator account:\n", function (email) {
 				rl.question("\nEnter the new password for the Administrator account. (Must be between 8-24 characters long and contain at least one upper case letter, lower case letter and number.)\n", function (password) {
 					if (!schema.validate(password)) {
 						console.log("\nInvalid password, must be between 8-24 characters long and contain at least one upper case letter, lower case letter and number.");
@@ -52,20 +52,20 @@ const initialiseDb = async function () {
 								// Import the "dbController" if the passwords matched.
 								const dbController = require(path.join(__dirname, "..", "..", "own_modules", "dbController.js"));
 								dbController.initialise();
-								console.log("\n The database file was created.\n");
-								rl.question("\n Please enter your first name.\n", function (firstName) {
-									rl.question("\n Please enter your surname.\n", function (surname) {
-										rl.question("\n Please enter your job title.\n", function (jobTitle) {
+								console.log("\nThe database file was created.\n");
+								rl.question("Please enter your first name.\n", function (firstName) {
+									rl.question("\nPlease enter your surname.\n", function (surname) {
+										rl.question("\nPlease enter your job title.\n", function (jobTitle) {
 											try {
 												// Hash the new Administrator password. 
-												cryptoController.hashPassword(username, password, function callback(err, result) {
+												cryptoController.hashPassword(email, password, function callback(err, result) {
 													if (err) {
 														console.log(err);
 														process.exit(1);
 													}
 													else {
 														// Store the Administator account details in "accounts" table 
-														dbController.storeUser(firstName, surname, jobTitle, email, result, "root", function callback(err, result) {
+														dbController.storeUser(firstName, surname, jobTitle, email, result, 'root', function callback(err, result) {
 															if (err) {
 																console.log(err);
 																process.exit(1);
