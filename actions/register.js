@@ -48,9 +48,9 @@ function post(req, res) {
 							res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
 						}
 						else {
-							console.log("\n -=- " + input.username + " -=- ");
+							console.log("\n -=- " + input.email + " -=- ");
 							// Check that there isn't another user already named the same.
-							(dbController.getUserByName(input.username, function callback(err, result) {
+							(dbController.getUserByEmail(input.email, function callback(err, result) {
 								if (err) {
 									throw err;
 								}
@@ -58,7 +58,7 @@ function post(req, res) {
 								else {
 									var user = result;
 									if (!user) {
-										console.log("The username isn't taken.");
+										console.log("The email address isn't taken.");
 										try {
 											// Hash password.
 											cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
@@ -68,13 +68,13 @@ function post(req, res) {
 												else {
 													console.log("Password hash: " + result);
 													// Store user.
-													dbController.storeUser(input.username, result, input.user, function callback(err, result) {
+													dbController.storeUser(input.firstName, input.surname, input.email, result, input.role, function callback(err, result) {
 														if (err) {
 															throw err;
 														}
 														else {
 															console.log(result);
-															res.render("pages/register.ejs", {info: "The user was created successfully."});
+															res.render("pages/register.ejs", {info: "Employee " + input.firstName + " " + input.surname + " (" + input.email + ") sucessfully registered"});
 														}
 													});
 												}
@@ -87,7 +87,7 @@ function post(req, res) {
 									}
 									else {
 										// Username is taken
-										res.render("pages/register.ejs", {info: "The username is taken, try again."});
+										res.render("pages/register.ejs", {info: "An employee account with that email address alread exists, please try again."});
 									}
 								}
 							}));
