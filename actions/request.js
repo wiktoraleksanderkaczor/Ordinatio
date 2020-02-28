@@ -43,7 +43,7 @@ function post(req, res) {
 				dbController.storeRequest(req.user.id, input.type, Date.now(), dateTimeStart, dateTimeEnd, function (err, result) {
 					if(err) {
 						console.log(err);
-						res.render('pages/request.ejs', { info: err.message });
+						res.render('pages/request.ejs', { username: req.user.firstName, info: err });
 					}
 					else {
 						console.log(result);

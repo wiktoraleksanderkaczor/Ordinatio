@@ -36,7 +36,7 @@ const initialiseDb = async function () {
 		}
 		else {
 			// Prompt the user for new username and password 
-			rl.question("\nEnter the new username for the Adminstrator account:\n", function (username) {
+			rl.question("\nEnter email address for the Adminstrator account:\n", function (username) {
 				rl.question("\nEnter the new password for the Administrator account. (Must be between 8-24 characters long and contain at least one upper case letter, lower case letter and number.)\n", function (password) {
 					if (!schema.validate(password)) {
 						console.log("\nInvalid password, must be between 8-24 characters long and contain at least one upper case letter, lower case letter and number.");
@@ -53,32 +53,39 @@ const initialiseDb = async function () {
 								const dbController = require(path.join(__dirname, "..", "..", "own_modules", "dbController.js"));
 								dbController.initialise();
 								console.log("\n The database file was created.\n");
-								try {
-									// Hash the new Administrator password. 
-									cryptoController.hashPassword(username, password, function callback(err, result) {
-										if (err) {
-											console.log(err);
-											process.exit(1);
-										}
-										else {
-											// Store the Administator account details in "accounts" table 
-											dbController.storeUser(username, result, "root", function callback(err, result) {
-												if (err) {
-													console.log(err);
-													process.exit(1);
-												}
-												else {
-													console.log(result + "\n");
-													console.log("Ordinatio is now initialised.\n");
-													process.exit(0);
-												}
-											});
-										}
+								rl.question("\n Please enter your first name.\n", function (firstName) {
+									rl.question("\n Please enter your surname.\n", function (surname) {
+										rl.question("\n Please enter your job title.\n", function (jobTitle) {
+											try {
+												// Hash the new Administrator password. 
+												cryptoController.hashPassword(username, password, function callback(err, result) {
+													if (err) {
+														console.log(err);
+														process.exit(1);
+													}
+													else {
+														// Store the Administator account details in "accounts" table 
+														dbController.storeUser(firstName, surname, jobTitle, email, result, "root", function callback(err, result) {
+															if (err) {
+																console.log(err);
+																process.exit(1);
+															}
+															else {
+																console.log(result + "\n");
+																console.log("Ordinatio is now initialised.\n");
+																process.exit(0);
+															}
+														});
+													}
+												});
+											}
+											catch (e) {
+												console.log(e);
+											}
+										});
 									});
-								}
-								catch (e) {
-									console.log(e);
-								}
+								});
+								
 							}
 						});
 					}

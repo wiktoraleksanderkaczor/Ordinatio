@@ -68,7 +68,7 @@ function post(req, res) {
 												else {
 													console.log("Password hash: " + result);
 													// Store user.
-													dbController.storeUser(input.firstName, input.surname, input.email, result, input.role, function callback(err, result) {
+													dbController.storeUser(input.firstName, input.surname, input.jobTitle, input.email, result, input.role, function callback(err, result) {
 														if (err) {
 															throw err;
 														}

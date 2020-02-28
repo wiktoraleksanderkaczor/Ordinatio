@@ -10,7 +10,7 @@ const db = new sqlite3.Database(dbPath);
 // Function to initialise the database 
 function initialise() { 
 	db.serialize(() => { 
-		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, email TEXT, password TEXT, role TEXT)");
+		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, jobTitle, email TEXT, password TEXT, role TEXT)");
 		db.run("CREATE TABLE requests(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE shifts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE holidays(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateStart TEXT, dateEnd TEXT)");
@@ -18,10 +18,11 @@ function initialise() {
 }
 
 // Function to store a user.
-function storeUser(firstName, surname, email, passwordHash, role, callback) {
-	db.run("INSERT INTO accounts (firstName, surname, email, password, role) VALUES($firstName, $surname, $email, $password, $role)", { 
+function storeUser(firstName, surname, jobTitle, email, passwordHash, role, callback) {
+	db.run("INSERT INTO accounts (firstName, surname, jobTitle, email, password, role) VALUES($firstName, $surname, $email, $password, $role)", { 
 		$firstName: firstName,
 		$surname: surname,
+		$jobTitle: jobTitle,
 		$email: email,
 		$password: passwordHash, 
 		$role: role, 
