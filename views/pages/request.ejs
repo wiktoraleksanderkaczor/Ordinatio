@@ -11,18 +11,22 @@
 			<h1>Ordinatio Rota Request Page</h1>
             <form id="requestForm" method="POST" action="/request">
                 <!-- Start and end dates for rota or holiday -->
-                <label for="start">Start date:</label>
-                <input type="date" name="start">
-                <label for="end">End date:</label>
-                <input type="date" name="end">
+                <label for="startDate">Start date:</label>
+                <input type="date" name="startDate" required>
+				<label for="startTime">Start Time:</label>
+				<input type="time" name="startTime" required>
+                <label for="endDate">End date:</label>
+                <input type="date" name="endDate" required>
+				<label for="endTime">End Time:</label>
+				<input type="time" name="endTime" required>
 
                 <br>
 
                 <!-- Rota or holiday choice -->
-                <label for="choice">Rota or Holiday:</label>
-				<select name="choice">
+                <label for="type">Rota or Shift Request:</label>
+				<select name="type" required>
 					<option value="holiday">Holiday</option>
-					<option value="rota" selected>Rota</option>
+					<option value="shift" selected>Shift</option>
                 </select>
                 
 				<input type="submit" value="Request">

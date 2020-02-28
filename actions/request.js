@@ -18,7 +18,7 @@ function get(req, res) {
 					res.render("pages/request.ejs", { info: "" });
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});
@@ -26,7 +26,7 @@ function get(req, res) {
 
 function post(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.username, function (err, role) {
 		if (err) {
 			console.log(err)
 		}
@@ -37,53 +37,27 @@ function post(req, res) {
 			if (permission.granted) {	
                 // Get the input from the request body.
                 const input = req.body;
-                
-                // Request definition from inputs.
-				const request = {
-					id: req.user.username+Date.now(),
-					name: input.choice,
-					start: input.start,
-					end: input.end
-				};
-
-				console.log(request);
-                // Get current user requests.
-                (dbController.getUserRequests(req.user.username, function callback(err, data) {
-                    if (err) {
+                // Storing task in database for specific user.	
+				const dateTimeStart = input.startDate + " " + input.startTime;
+				const dateTimeEnd = input.endDate + " " + input.endTime;
+				dbController.storeRequest(req.user.id, input.type, Date.now(), dateTimeStart, dateTimeEnd, function (err, result) {
+					if(err) {
 						console.log(err);
+						res.render('pages/request.ejs', { info: err.message });
 					}
 					else {
-						// Convert to appropriate format for storage.
-						parsed = JSON.parse(data);
-						// Check if empty, if so, insert task in array.
-						if (data === JSON.stringify({})) {
-							parsed = [request];
-						}
-						// If not, assume that it is array, push task to array.
-						else {
-							parsed.push(request);
-						}
-						const new_data = JSON.stringify(parsed);
-
-						// Storing task in database for specific user.	
-						(dbController.storeRequest(req.user.username, new_data, function callback(err, result) {
-							if (err) {
-								throw err;
-							}
-							else {
-								console.log(result);
-								res.render("pages/request.ejs", {info: "The user was assigned the task successfully."});
-							}
-						}));
+						console.log(result);
+						res.render('pages/request.ejs', { info: result, username: req.user.firstName });
 					}
-				}));
+				});
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});
 }
+	
 
 module.exports.get = get;
 module.exports.post = post;
