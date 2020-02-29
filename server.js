@@ -73,7 +73,7 @@ app.get("/", isNotAuthenticated, (req, res) =>
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {
-	res.render("pages/login.ejs");
+	res.render("pages/login.ejs", { alert : " " });
 });
 
 // Handler for POST on login if not authenticated.
@@ -81,7 +81,7 @@ app.post("/login", isNotAuthenticated, passport.authenticate("local",
 {
 	successRedirect: "/main",
 	failureRedirect: "/login",
-	failureFlash: true
+	//failureFlash: true
 }));
 
 // Render register from register if authenticated.

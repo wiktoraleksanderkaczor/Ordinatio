@@ -57,7 +57,6 @@ function post(req, res) {
 		}
 	});
 }
-	
 
 module.exports.get = get;
 module.exports.post = post;

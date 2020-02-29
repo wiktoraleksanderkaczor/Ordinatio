@@ -162,8 +162,8 @@ function getUserById(id, callback) {
 
 //Function to retrieve user by email
 function getUserByEmail(email, callback) {
-	db.get("SELECT * FROM accounts WHERE id=$id", { 
-		$id: id
+	db.get("SELECT * FROM accounts WHERE email=$email", { 
+		$email:email
 		}, (err, row) => { 
 			if (err) { 
 				callback(err, null); 

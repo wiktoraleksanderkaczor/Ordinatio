@@ -17,7 +17,7 @@ function initialize(passport) {
 	});
 
 	passport.deserializeUser(function(id, done) {
-		db.get("SELECT id, username FROM accounts WHERE id = ?", id, function(err, row) {
+		db.get("SELECT id, email FROM accounts WHERE id = ?", id, function(err, row) {
     			if (!row) {
 				return done(null, false);
 			} 

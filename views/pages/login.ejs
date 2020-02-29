@@ -11,11 +11,12 @@
 			<h1>Welcome To Ordinatio</h1>
 			<form id="loginForm" method="POST" action="/login">
 				<label for="username">Email:</label>
-				<input type="text" name="email" placeholder="email" required pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Must be a valid email address>
+				<input type="text" name="email" placeholder="Email address" required pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Must be a valid email address">
 				<label for="password1">Password:</label>
 				<input type="password" name="password" placeholder = "Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
 			    <input type="submit" value="Login">
 			</form>
 		</div>
+		<h1><%= alert %></h1>
 	</body>
 </html>
