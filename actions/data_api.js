@@ -5,7 +5,7 @@ const acl = require("../own_modules/accessControl.js");
 
 function gantt(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
+	(dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -42,7 +42,7 @@ function gantt(req, res) {
 
 function requests(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
+	(dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}

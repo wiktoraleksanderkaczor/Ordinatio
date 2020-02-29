@@ -5,7 +5,7 @@ const acl = require("../own_modules/accessControl.js");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -17,7 +17,7 @@ function get(req, res) {
 				res.render("pages/assign.ejs", { info: "" });
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
     });
@@ -25,7 +25,7 @@ function get(req, res) {
 
 function post(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
+	(dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err)
 		}
@@ -64,7 +64,7 @@ function post(req, res) {
 				}
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
     }));

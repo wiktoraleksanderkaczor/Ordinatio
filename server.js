@@ -73,7 +73,7 @@ app.get("/", isNotAuthenticated, (req, res) =>
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {
-	res.render("pages/login.ejs", { alert: "" } );
+	res.render("pages/login.ejs", { alert: " " });
 });
 
 // Handler for POST on login if not authenticated.
