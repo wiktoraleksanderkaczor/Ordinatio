@@ -5,7 +5,7 @@ const acl = require("../own_modules/accessControl.js");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -15,14 +15,14 @@ function get(req, res) {
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if (role === "admin" || role === "root") {
-					res.render("pages/main-admin.ejs", { username: req.user.username });
+					res.render("pages/main-admin.ejs", { username: req.user.firstName });
 				}
 				else {
-					res.render("pages/main.ejs", { username: req.user.username });
+					res.render("pages/main.ejs", { username: req.user.firstName });
 				}
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});

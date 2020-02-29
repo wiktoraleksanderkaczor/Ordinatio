@@ -10,7 +10,7 @@ const db = new sqlite3.Database(dbPath);
 // Function to initialise the database 
 function initialise() { 
 	db.serialize(() => { 
-		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, jobTitle, email TEXT, password TEXT, role TEXT)");
+		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, jobTitle, username TEXT, password TEXT, role TEXT)");
 		db.run("CREATE TABLE requests(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE shifts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE holidays(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateStart TEXT, dateEnd TEXT)");
@@ -19,11 +19,11 @@ function initialise() {
 
 // Function to store a user.
 function storeUser(firstName, surname, jobTitle, email, passwordHash, role, callback) {
-	db.run("INSERT INTO accounts (firstName, surname, jobTitle, email, password, role) VALUES($firstName, $surname, $jobTitle, $email, $password, $role)", { 
+	db.run("INSERT INTO accounts (firstName, surname, jobTitle, username, password, role) VALUES($firstName, $surname, $jobTitle, $username, $password, $role)", { 
 		$firstName: firstName,
 		$surname: surname,
 		$jobTitle: jobTitle,
-		$email: email,
+		$username: email,
 		$password: passwordHash, 
 		$role: role
 		}, (err) => {
@@ -162,8 +162,8 @@ function getUserById(id, callback) {
 
 //Function to retrieve user by email
 function getUserByEmail(email, callback) {
-	db.get("SELECT * FROM accounts WHERE email=$email", { 
-		$email:email
+	db.get("SELECT * FROM accounts WHERE username=$username", { 
+		$username: email
 		}, (err, row) => { 
 			if (err) { 
 				callback(err, null); 
@@ -192,7 +192,7 @@ function getUserRole(id, callback) {
 
 //Function to retrieve a user's requests by their id
 function getUserRequests(id, callback) {
-	db.all("SELECT * FROM requets INNER JOIN accounts ON requests.employeeId = accounts.id WHERE id=$id", {
+	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE id=$id", {
 			$id: id
 		}, (err, rows) => {
 			if (err) {

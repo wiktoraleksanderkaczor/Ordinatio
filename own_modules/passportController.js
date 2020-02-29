@@ -17,7 +17,7 @@ function initialize(passport) {
 	});
 
 	passport.deserializeUser(function(id, done) {
-		db.get("SELECT id, email FROM accounts WHERE id = ?", id, function(err, row) {
+		db.get("SELECT id, username FROM accounts WHERE id = ?", id, function(err, row) {
     			if (!row) {
 				return done(null, false);
 			} 
@@ -30,8 +30,8 @@ function initialize(passport) {
 }
 
 // Define local authentication function.
-function authenticateUser(email, password, done) {
-	db.get("SELECT * FROM accounts WHERE email=$email", {$email:email}, function(err, row) {  
+function authenticateUser(username, password, done) {
+	db.get("SELECT * FROM accounts WHERE username=$username", {$username:username}, function(err, row) {  
 		if (err) {
 			throw err;
 		}
