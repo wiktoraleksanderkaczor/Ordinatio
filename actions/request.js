@@ -15,7 +15,7 @@ function get(req, res) {
 			permission = acl.ac.can(role).execute("create").sync().on("rota-request");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-					res.render("pages/request.ejs", { info: "" });
+				getRequestListAndRender(req, res, " ");
 			}
 			else {
 				res.render("pages/denied.ejs", { username: req.user.firstName });
@@ -42,18 +42,28 @@ function post(req, res) {
 				const dateTimeEnd = input.endDate + " " + input.endTime;
 				dbController.storeRequest(req.user.id, input.type, Date.now(), dateTimeStart, dateTimeEnd, function (err, result) {
 					if(err) {
-						console.log(err);
-						res.render('pages/request.ejs', { username: req.user.firstName, info: err });
+						getRequestListAndRender(req, res, err);
 					}
 					else {
-						console.log(result);
-						res.render('pages/request.ejs', { info: result, username: req.user.firstName });
+						getRequestListAndRender(req, res, result);
 					}
 				});
 			}
 			else {
 				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
+		}
+	});
+}
+
+function getRequestListAndRender(req, res, message) {
+	dbController.getUserRequests(req.user.id, function (err, result) {
+		if(err) {
+			console.log(err);
+			res.render('pages/request.ejs', { username: req.user.firstName, requests: " ", info: err } );
+		}
+		else {
+			res.render('pages/request.ejs', { username: req.user.firstName, requests : result, info: message });
 		}
 	});
 }

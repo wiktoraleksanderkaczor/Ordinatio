@@ -35,37 +35,19 @@
 			<form id="linksForm" method="GET" action="/main">
 				<input type="submit" value="Go back" formaction="/main" form="linksForm">
             </form>
-
-            <h3>Current requests:</h3>
-            <div class="col-lg-12" id="request-list">
-                <!-- Insert my list here -->                              
-            </div>
-            <script>
-                // Fetch JSON data from server
-                fetch('./rota_requests')
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    // Use the data to add requests to a HTML list.
-                    var listDiv = document.getElementById('request-list');
-                    var ul=document.createElement('ul');
-                    for (var i = 0; i < data.length; ++i) {
-                        var li=document.createElement('li');
-                        // Use innerHTML to set the text.
-                        li.innerHTML = data[i].start + " - " + data[i].end;   
-                        ul.appendChild(li);                                 
-                    }
-                    listDiv.appendChild(ul);
-                })
-                .catch(err => {
-                    console.log("Error with fetching Gantt chart data.");
-                });
-
-
-
-            </script>
+			<div>
+			<h1> Current Requests: </h1>
+			<ul>	
+				<% for(var i = 0; i<requests.length; i++) {%>
+				<li>
+					Request <%=i+1%>: <%=JSON.stringify(requests[i].type).replace(/["]+/g,"") %> request: <br> Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%> <br>
+					Start date/time: <%=JSON.stringify(requests[i].dateTimeStart).replace(/["]+/g,"")%> <br>
+					End date/time: <%=JSON.stringify(requests[i].dateTimeEnd).replace(/["]+/g,"")%>
+				</li>
+				<% } %>
+			</ul>
+			</div>
+  
             <h1><%= info %></h1>
 		</div>
 	</body>

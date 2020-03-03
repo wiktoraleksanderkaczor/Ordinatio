@@ -1,0 +1,16 @@
+<html>
+	<body>
+		<div>
+			<h1> Current Requests: </h1>
+			<ul>	
+				<% for(var i = 0; i<requests.length; i++) {%>
+				<li>
+					Request <%=i+1%>: <%=JSON.stringify(requests[i].type).replace(/["]+/g,"") %> request: <br> Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%> <br>
+					Start date/time: <%=JSON.stringify(requests[i].dateTimeStart).replace(/["]+/g,"")%> <br>
+					End date/time: <%=JSON.stringify(requests[i].dateTimeEnd).replace(/["]+/g,"")%>
+				</li>
+				<% } %>
+			</ul>
+		</div>
+	</body>
+</html>

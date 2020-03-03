@@ -18,6 +18,7 @@ const request = require("./actions/request.js");
 const data = require("./actions/data_api.js");
 const assign = require("./actions/assign.js");
 const main = require("./actions/main.js");
+const requestTest = require("./actions/request-test.js");
 
 
 // Set server settings and setup packages.
@@ -70,6 +71,9 @@ app.get("/", isNotAuthenticated, (req, res) =>
 	res.redirect("/login");
 });
 
+app.get("/test", requestTest.get); 
+
+
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {
@@ -81,7 +85,6 @@ app.post("/login", isNotAuthenticated, passport.authenticate("local",
 {
 	successRedirect: "/main",
 	failureRedirect: "/login",
-	failureFlash: true
 }));
 
 // Render register from register if authenticated.

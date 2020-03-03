@@ -85,7 +85,7 @@ function deleteRequest(id, callback) {
 }
 
 // Function to store a shift in database.
-function storeShift(employeeId, dateTimeStart, dateTimeEnd) {
+function storeShift(employeeId, dateTimeStart, dateTimeEnd, callback) {
 	db.run("INSERT INTO shifts (employeeId, dateTimeStart, dateTimeEnd) VALUES($employeeId, $dateTimeStart, $dateTimeEnd)", {
 			$employeeId: employeeId,
 			$dateTimeStart: dateTimeStart,
@@ -191,9 +191,9 @@ function getUserRole(id, callback) {
 } 
 
 //Function to retrieve a user's requests by their id
-function getUserRequests(id, callback) {
-	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE id=$id", {
-			$id: id
+function getUserRequests(employeeId, callback) {
+	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE requests.employeeId=$employeeId", {
+			$employeeId: employeeId
 		}, (err, rows) => {
 			if (err) {
 				callback(err, null);
