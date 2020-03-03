@@ -192,7 +192,7 @@ function getUserRole(id, callback) {
 
 //Function to retrieve a user's requests by their id
 function getUserRequests(employeeId, callback) {
-	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE requests.employeeId=$employeeId", {
+	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE requests.employeeId=$employeeId", {
 			$employeeId: employeeId
 		}, (err, rows) => {
 			if (err) {
@@ -207,7 +207,7 @@ function getUserRequests(employeeId, callback) {
  
 //Function to retrieve a user's shifts by their id
 function getUserShifts(id, callback) {
-	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE id=$id", {
+	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id WHERE id=$id", {
 		$id:id
 		}, (err, rows) => {
 			if (err) {
@@ -222,7 +222,7 @@ function getUserShifts(id, callback) {
 
 //Function to delete all of a user's requests 
 function deleteAllUserRequests(employeeId, callback) {
-	db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE requests.employeeId=$employeeId", {
+	db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE requests.employeeId=$employeeId", {
 		$employeeId: employeeId
 	}, (err) => {
 		if(err) {
@@ -236,7 +236,7 @@ function deleteAllUserRequests(employeeId, callback) {
 
 //Function to delete all of a user's shifts
 function deleteAllUserShifts(employeeId, callback) {
-	db.run("DELETE * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE shifts.employeeId=$employeeId", {
+	db.run("DELETE * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id WHERE shifts.employeeId=$employeeId", {
 		$employeeId: employeeId
 	}, (err) => {
 		if(err) {
@@ -264,7 +264,7 @@ function deleteAllUserHolidays(employeeId, callback) {
 
 //Function to retrieve all pending requests on the system
 function getAllRequests(callback) {
-	db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -276,7 +276,7 @@ function getAllRequests(callback) {
 
 //Function to retrieve only shift requests from the system
 function getAllShiftRequests(callback) {
-		db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE type='shift'", (err, rows) => {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='shift'", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -288,7 +288,7 @@ function getAllShiftRequests(callback) {
 
 //Function to retrieve only holiday requests from the system
 function getAllHolidayRequests(callback) {
-		db.all("SELECT * FROM requests INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE type='holiday'", (err, rows) => {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='holiday'", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -300,7 +300,7 @@ function getAllHolidayRequests(callback) {
 
 //Function to retrieve all shifts on the system
 function getAllShifts(callback) {
-	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -312,7 +312,7 @@ function getAllShifts(callback) {
 
 //Function to retrieve all holidays on the system
 function getAllHolidays(callback) {
-	db.all("SELECT * FROM holidays INNER JOIN accounts ON shifts.employeeId = accounts.id", (err, rows) => {
+	db.all("SELECT * FROM holidays INNER JOIN accounts ON holidays.employeeId= ccounts.id", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
