@@ -19,6 +19,29 @@
 			<form id="assignForm" method="GET" action="/">
 				<input type="submit" value="Assign rota or holiday" formaction="/assign" form="assignForm">
 			</form>
+			<div id=pending_requests>
+				<h1>Pending Shift/Holiday Requests:</h1>
+				<ul>	
+					<% for(var i = 0; i< requests.length; i++) { %>
+					<li>
+						<%=JSON.stringify(requests[i].type).replace(/["]+/g,"") %> Request <%=JSON.stringify(requests[i].id).replace(/["]+/g,"")%>
+						<br> 
+						<%=JSON.stringify(requests[i].firstName)%> <%=JSON.stringify(requests[i].surname).replace(/["]+/g,"")%> <%=JSON.stringify(requests[i].username).replace(/["]+/g,"")%> 
+						<br> 
+						Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%>
+						<br>
+						Start date/time: <%=JSON.stringify(requests[i].dateTimeStart).replace(/["]+/g,"")%> 
+						<br>
+						End date/time: <%=JSON.stringify(requests[i].dateTimeEnd).replace(/["]+/g,"")%>
+						<form "method="POST" action"/">
+							<input type="submit" value="Accept" formaction="/accept/<%=i%>">
+							<input type="submit" value="Reject" formaction="/reject/<%=i%>">
+						</form>
+					</li>
+				<% } %>
+				</ul>
+			</div>
+			
 		</div>
 	</body>
 </html>

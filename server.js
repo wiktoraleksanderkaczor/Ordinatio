@@ -71,9 +71,6 @@ app.get("/", isNotAuthenticated, (req, res) =>
 	res.redirect("/login");
 });
 
-app.get("/test", requestTest.get); 
-
-
 // Render login from login if not authenticated.
 app.get("/login", isNotAuthenticated, (req, res) =>
 {

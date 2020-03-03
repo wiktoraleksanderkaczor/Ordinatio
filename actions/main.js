@@ -14,18 +14,34 @@ function get(req, res) {
 			permission = acl.ac.can(role).execute("view").sync().on("schedule");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/main-admin.ejs", { username: req.user.firstName });
+				if(role === "root" || role === "admin") {
+					dbController.getAllShifts(function (err, shiftresults) {
+						if(err) {
+							console.log(err);
+							console.log(shiftresults);
+							res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
+						}
+						else { 
+							console.log(shiftresults);
+							dbController.getAllRequests(function (err, requestResults) {
+								if(err) { 
+									console.log(err);
+									console.log(requestResults);
+									res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
+								}
+								else {
+									res.render('pages/main-admin.ejs', { info: " ", username: req.user.firstName, shifts: shiftresults, requests: requestResults });
+									console.log(requestResults);
+								}
+							});
+						}
+					});
 				}
 				else {
-					res.render("pages/main.ejs", { username: req.user.firstName });
+						res.render('pages/main.ejs', { info: "", username: req.user.firstName });
 				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.firstName });
-			}
+			};
 		}
 	});
 }
-
 module.exports.get = get;

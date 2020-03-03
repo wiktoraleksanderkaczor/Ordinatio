@@ -39,18 +39,19 @@ function post(req, res) {
 				const dateTimeStart = input.startDate + " " + input.startTime;
 				const dateTimeEnd = input.endDate + " " + input.endTime;
 				switch(input.type) {
-					case "shift":
+					case "Shift":
 						dbController.storeShift(input.employeeId, dateTimeStart, dateTimeEnd, function (err, result) {
 							if(err) {
 								console.log(err);
 								res.render('pages/assign', { username: req.user.FirstName, info: err });
 							}
 							else {
+								console.log(result);
 								res.render('pages/assign', { username: req.user.firstName, info: result });
 							}
 						});
 						break;
-					case "holiday":
+					case "Holiday":
 						dbController.storeHoliday(input.employeeId, input.startDate, input.endDate, function (err, result) {
 							if(err) {
 								console.log(err);
