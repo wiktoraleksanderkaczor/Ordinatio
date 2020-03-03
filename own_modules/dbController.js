@@ -222,7 +222,7 @@ function getUserShifts(id, callback) {
 
 //Function to delete all of a user's requests 
 function deleteAllUserRequests(employeeId, callback) {
-	db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE employeeId=$employeeId", {
+	db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.id WHERE requests.employeeId=$employeeId", {
 		$employeeId: employeeId
 	}, (err) => {
 		if(err) {
@@ -236,7 +236,7 @@ function deleteAllUserRequests(employeeId, callback) {
 
 //Function to delete all of a user's shifts
 function deleteAllUserShifts(employeeId, callback) {
-	db.run("DELETE * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE employeeId=$employeeId", {
+	db.run("DELETE * FROM shifts INNER JOIN accounts ON shifts.employeeId = accounts.id WHERE shifts.employeeId=$employeeId", {
 		$employeeId: employeeId
 	}, (err) => {
 		if(err) {
@@ -250,7 +250,7 @@ function deleteAllUserShifts(employeeId, callback) {
 
 //Function to delete all of a user's holidays
 function deleteAllUserHolidays(employeeId, callback) {
-	db.run("DELETE * FROM holidays INNER JOIN accounts ON holidays.employeeId = accounts.id WHERE employeeId=$employeeId", {
+	db.run("DELETE * FROM holidays INNER JOIN accounts ON holidays.employeeId = accounts.id WHERE holidays.employeeId=$employeeId", {
 		$employeeId: employeeId
 	}, (err) => {
 		if(err) {
