@@ -18,20 +18,16 @@ function get(req, res) {
 					dbController.getAllShifts(function (err, shiftresults) {
 						if(err) {
 							console.log(err);
-							console.log(shiftresults);
 							res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
 						}
 						else { 
-							console.log(shiftresults);
 							dbController.getAllRequests(function (err, requestResults) {
 								if(err) { 
 									console.log(err);
-									console.log(requestResults);
 									res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
 								}
 								else {
 									res.render('pages/main-admin.ejs', { info: " ", username: req.user.firstName, shifts: shiftresults, requests: requestResults });
-									console.log(requestResults);
 								}
 							});
 						}

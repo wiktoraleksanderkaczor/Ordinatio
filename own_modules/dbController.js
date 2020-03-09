@@ -11,7 +11,7 @@ const db = new sqlite3.Database(dbPath);
 function initialise() { 
 	db.serialize(() => { 
 		db.run("CREATE TABLE accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, jobTitle, username TEXT, password TEXT, role TEXT)");
-		db.run("CREATE TABLE requests(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateTimeStart TEXT, dateTimeEnd TEXT)");
+		db.run("CREATE TABLE requests(requestId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE shifts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateTimeStart TEXT, dateTimeEnd TEXT)");
 		db.run("CREATE TABLE holidays(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, dateStart TEXT, dateEnd TEXT)");
 	});
@@ -71,15 +71,15 @@ function storeRequest(employeeId, type, dateTimeSubmitted, dateTimeStart, dateTi
 }
 
 //Function to cancel (delete) a request from the database
-function deleteRequest(id, callback) {
-	db.run("DELETE FROM requests WHERE id=$id", {
-		$id:id
+function deleteRequest(requestId, callback) {
+	db.run("DELETE FROM requests WHERE requestId=$requestId", {
+		$requestId:requestId
 	}, (err) => {
 		if(err) {
 			callback(err);
 		}
 		else {
-			callback("Request " + id +" cancelled.");
+			callback("Request " + requestId +" cancelled.");
 		}
 	});
 }
@@ -117,7 +117,7 @@ function deleteShift(id, callback) {
 
 //Function to store a holiday in the database by user id
 function storeHoliday(employeeId, dateStart, dateEnd, callback) {
-	db.run("INSERT INTO holidays (employeeId, dateStart, dateEnd) VALUES($employeeId, dateStart, dateEnd)", {
+	db.run("INSERT INTO holidays (employeeId, dateStart, dateEnd) VALUES($employeeId, $dateStart, $dateEnd)", {
 		$employeeId: employeeId,
 		$dateStart: dateStart,
 		$dateEnd: dateEnd
@@ -190,6 +190,48 @@ function getUserRole(id, callback) {
 	); 
 } 
 
+//Function to retrieve a shift by its id
+function getShift(id, callback) {
+	db.get("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id WHERE shifts.id=$id", {
+		$id:id
+	}, (err, row) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, row);
+		}
+	});
+}
+
+//Function to retrieve a request by its id
+function getRequest(requestId, callback) {
+	db.get("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE requests.requestId=$requestId", {
+		$requestId: requestId
+	}, (err, row) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, row);
+		}
+	});
+}
+
+//Function to retrieve a holiday by its id
+function getHoliday(id, callback) {
+	db.get("SELECT * FROM requests INNER JOIN accounts ON holidays.employeeId=accounts.id WHERE holidays.id=$id", {
+		$id:id
+	}, (err, row) => {
+		if(err) {
+			callback(err, null);
+		}
+		else {
+			callback(null, row);
+		}
+	});
+}
+
 //Function to retrieve a user's requests by their id
 function getUserRequests(employeeId, callback) {
 	db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE requests.employeeId=$employeeId", {
@@ -207,8 +249,8 @@ function getUserRequests(employeeId, callback) {
  
 //Function to retrieve a user's shifts by their id
 function getUserShifts(id, callback) {
-	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id WHERE id=$id", {
-		$id:id
+	db.all("SELECT * FROM shifts INNER JOIN accounts ON shifts.employeeId=accounts.id WHERE requests.employeeId=$employeeId", {
+		$employeeId: employeeId
 		}, (err, rows) => {
 			if (err) {
 				callback(err, null);
@@ -276,7 +318,7 @@ function getAllRequests(callback) {
 
 //Function to retrieve only shift requests from the system
 function getAllShiftRequests(callback) {
-		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='shift'", (err, rows) => {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='Shift'", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -288,7 +330,7 @@ function getAllShiftRequests(callback) {
 
 //Function to retrieve only holiday requests from the system
 function getAllHolidayRequests(callback) {
-		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='holiday'", (err, rows) => {
+		db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.id WHERE type='Holiday'", (err, rows) => {
 		if(err) {
 			callback(err, null);
 		}
@@ -345,4 +387,7 @@ module.exports.storeRequest = storeRequest;
 module.exports.deleteUser = deleteUser;
 module.exports.storeUser = storeUser;
 module.exports.initialise = initialise;
+module.exports.getRequest = getRequest;
+module.exports.getHoliday = getHoliday;
+module.exports.getShift = getShift;
 	

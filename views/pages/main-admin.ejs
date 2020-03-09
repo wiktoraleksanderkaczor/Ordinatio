@@ -20,28 +20,33 @@
 				<input type="submit" value="Assign rota or holiday" formaction="/assign" form="assignForm">
 			</form>
 			<div id=pending_requests>
-				<h1>Pending Shift/Holiday Requests:</h1>
+				<h1>Pending shift/holiday requests:</h1>
 				<ul>	
 					<% for(var i = 0; i< requests.length; i++) { %>
 					<li>
-						<%=JSON.stringify(requests[i].type).replace(/["]+/g,"") %> Request <%=JSON.stringify(requests[i].id).replace(/["]+/g,"")%>
-						<br> 
-						<%=JSON.stringify(requests[i].firstName)%> <%=JSON.stringify(requests[i].surname).replace(/["]+/g,"")%> <%=JSON.stringify(requests[i].username).replace(/["]+/g,"")%> 
+						Request ID: <%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>
+						<br>
+						Type: <%=JSON.stringify(requests[i].type).replace(/["]+/g,"")%> request
+						<br>
+						Requested by: <%=JSON.stringify(requests[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(requests[i].surname).replace(/["]+/g,"")%> (<%=JSON.stringify(requests[i].username).replace(/["]+/g,"")%>) 
 						<br> 
 						Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%>
 						<br>
 						Start date/time: <%=JSON.stringify(requests[i].dateTimeStart).replace(/["]+/g,"")%> 
 						<br>
 						End date/time: <%=JSON.stringify(requests[i].dateTimeEnd).replace(/["]+/g,"")%>
-						<form "method="POST" action"/">
-							<input type="submit" value="Accept" formaction="/accept/<%=i%>">
-							<input type="submit" value="Reject" formaction="/reject/<%=i%>">
+						<form id="acceptOrRejectForm" method="POST" action"/">
+							<input type="submit" value="Accept" formaction="/acceptRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
+							<input type="submit" value="Reject" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
 						</form>
+						<br>
 					</li>
 				<% } %>
 				</ul>
 			</div>
-			
+			<div>
+				<%=info%>
+			</div>
 		</div>
 	</body>
 </html>

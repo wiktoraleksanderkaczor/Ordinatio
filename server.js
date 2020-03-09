@@ -18,7 +18,8 @@ const request = require("./actions/request.js");
 const data = require("./actions/data_api.js");
 const assign = require("./actions/assign.js");
 const main = require("./actions/main.js");
-const requestTest = require("./actions/request-test.js");
+const acceptRequest = require("./actions/acceptRequest.js");
+const rejectRequest = require("./actions/rejectRequest.js");
 
 
 // Set server settings and setup packages.
@@ -28,6 +29,7 @@ const port = process.env.PORT || 3000;
 // Set viewer engine and file directory.
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/views/pages"));
+
 
 // Set HTTP command parser.
 app.use(bodyParser.json());
@@ -92,6 +94,14 @@ app.post("/register", isAuthenticated, register.post);
 
 // Render main from main if authenticated.
 app.get("/main", isAuthenticated, main.get);
+
+app.get("/acceptRequest", isAuthenticated, acceptRequest.get);
+
+app.post("/acceptRequest", isAuthenticated, acceptRequest.post);
+
+app.get("/rejectRequest", isAuthenticated, rejectRequest.get);
+
+app.post("/rejectRequest", isAuthenticated, rejectRequest.post);
 
 // Render assign from assign if authenticated.
 app.get("/assign", isAuthenticated, assign.get);
