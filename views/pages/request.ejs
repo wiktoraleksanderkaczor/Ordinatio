@@ -25,8 +25,8 @@
                 <!-- Rota or holiday choice -->
                 <label for="type">Rota or Shift Request:</label>
 				<select name="type" required>
-					<option value="Holiday">Holiday</option>
-					<option value="Shift" selected>Shift</option>
+					<option value="holiday">Holiday request</option>
+					<option value="shift" selected>Shift request</option>
                 </select>
                 
 				<input type="submit" value="Request">
@@ -36,7 +36,7 @@
 				<input type="submit" value="Go back" formaction="/main" form="linksForm">
             </form>
 			<div>
-			<h1> Your current requests: </h1>
+			<h1> Your pending requests: </h1>
 			<ul>	
 				<% for(var i = 0; i<requests.length; i++) {%>
 				<li>
@@ -46,12 +46,16 @@
 					<br> 
 					Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%> 
 					<br>
-					Start date/time: <%=JSON.stringify(requests[i].dateTimeStart).replace(/["]+/g,"")%> 
+					Start date/time: <%=JSON.stringify(requests[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeStart).replace(/["]+/g,"")%> 
 					<br>
-					End date/time: <%=JSON.stringify(requests[i].dateTimeEnd).replace(/["]+/g,"")%>
+					End date/time: <%=JSON.stringify(requests[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeEnd).replace(/["]+/g,"")%> 
 					<br>
-					<br>
+					<form id="cancelForm" method="POST" action="/">
+						<input type="submit" value="Cancel" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="cancelForm">
+					</form>
+					
 				</li>
+				<br>
 				<% } %>
 			</ul>
 			</div>

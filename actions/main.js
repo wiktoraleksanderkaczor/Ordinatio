@@ -15,26 +15,42 @@ function get(req, res) {
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
 				if(role === "root" || role === "admin") {
-					dbController.getAllShifts(function (err, shiftresults) {
+					dbController.getAllShifts(function (err, shiftResults) {
 						if(err) {
 							console.log(err);
-							res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
+							res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "", messages: "" } );
 						}
 						else { 
 							dbController.getAllRequests(function (err, requestResults) {
 								if(err) { 
 									console.log(err);
-									res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "" } );
+									res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "", messages: "" } );
 								}
 								else {
-									res.render('pages/main-admin.ejs', { info: " ", username: req.user.firstName, shifts: shiftresults, requests: requestResults });
+									dbController.getUserMessages(req.user.id, function(err, messageResults) {
+										if(err) {
+											console.log(err);
+											res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: shiftResults, requests: requestResults, messages: "" });
+										} 
+										else {
+											res.render('pages/main-admin.ejs', { info: "", username: req.user.firstName, shifts: shiftResults, requests: requestResults, messages: messageResults });
+										}
+									});
 								}
 							});
 						}
 					});
 				}
 				else {
-						res.render('pages/main.ejs', { info: "", username: req.user.firstName });
+						dbController.getUserMessages(req.user.id, function(err, messageResults) {
+							if(err) {
+								console.log(err);
+								res.render('pages/main.ejs', { info: err, username: req.user.firstName, messages: "" });
+							}
+							else {
+								res.render('pages/main.ejs', { info: err, username: req.user.firstName, messages: messageResults });
+							}
+						});
 				}
 			};
 		}

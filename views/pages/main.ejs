@@ -36,5 +36,19 @@
 				console.log("Error with fetching Gantt chart data.");
 			});
 		</script> -->
+		<div id=message_inbox>
+				<h1>Latest messages:</h1>
+				<ul>
+					<% for(var i = 0; i< messages.length; i++) { %>
+					<li>
+						From: <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> - <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%> 
+						<br>
+							<%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%> 
+						<br>		-<%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%> 
+					</li>
+					<br>
+				<% } %>
+				</ul>
+		</div>
 	</body>
 </html>

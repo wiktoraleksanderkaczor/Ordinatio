@@ -2,7 +2,7 @@
 const cryptoController = require("../own_modules/cryptoController.js");
 const dbController = require("../own_modules/dbController.js");
 const acl = require("../own_modules/accessControl.js");
-
+const moment = require("moment");
 
 function get(req, res) {
 	//Get role
@@ -38,9 +38,7 @@ function post(req, res) {
                 // Get the input from the request body.
                 const input = req.body;
                 // Storing task in database for specific user.	
-				const dateTimeStart = input.startDate + " " + input.startTime;
-				const dateTimeEnd = input.endDate + " " + input.endTime;
-				dbController.storeRequest(req.user.id, input.type, Date.now(), dateTimeStart, dateTimeEnd, function (err, result) {
+				dbController.storeRequest(req.user.id, input.type, moment().format("YYYY-MM-DD - hh:mm"), input.startDate, input.endDate, input.startTime, input.endTime, function (err, result) {
 					if(err) {
 						getRequestListAndRender(req, res, err);
 					}
