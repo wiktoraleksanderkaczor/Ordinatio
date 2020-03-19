@@ -5,7 +5,7 @@ const acl = require("../own_modules/accessControl.js");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -14,18 +14,46 @@ function get(req, res) {
 			permission = acl.ac.can(role).execute("view").sync().on("schedule");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-				if (role === "admin" || role === "root") {
-					res.render("pages/main-admin.ejs", { username: req.user.username });
+				if(role === "root" || role === "admin") {
+					dbController.getAllShifts(function (err, shiftResults) {
+						if(err) {
+							console.log(err);
+							res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "", messages: "" } );
+						}
+						else { 
+							dbController.getAllRequests(function (err, requestResults) {
+								if(err) { 
+									console.log(err);
+									res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: "", requests: "", messages: "" } );
+								}
+								else {
+									dbController.getUserMessages(req.user.id, function(err, messageResults) {
+										if(err) {
+											console.log(err);
+											res.render('pages/main-admin.ejs', { info: err, username: req.user.firstName, shifts: shiftResults, requests: requestResults, messages: "" });
+										} 
+										else {
+											res.render('pages/main-admin.ejs', { info: "", username: req.user.firstName, shifts: shiftResults, requests: requestResults, messages: messageResults });
+										}
+									});
+								}
+							});
+						}
+					});
 				}
 				else {
-					res.render("pages/main.ejs", { username: req.user.username });
+						dbController.getUserMessages(req.user.id, function(err, messageResults) {
+							if(err) {
+								console.log(err);
+								res.render('pages/main.ejs', { info: err, username: req.user.firstName, messages: "" });
+							}
+							else {
+								res.render('pages/main.ejs', { info: err, username: req.user.firstName, messages: messageResults });
+							}
+						});
 				}
-			}
-			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
-			}
+			};
 		}
 	});
 }
-
 module.exports.get = get;

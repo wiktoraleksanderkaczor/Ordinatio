@@ -9,17 +9,26 @@
 	<body>
 		<div>
 			<h1>Ordinatio Admin Page</h1>
-			<form id="registerForm" method="POST" action="/register">
-				<label for="username">Username:</label>
-				<input type="text" name="username" placeholder="Username" required pattern="^[A-Za-z0-9]{1,12}$" title="Username may only contain letters and numbers and be no more than 12 characters long.">
+		</div>
+		<div>
+			<h1> Employee Registeration Form </h1>
+				<form id="registerForm" method="POST" action="/register">
+				<label for="email">Email address:</label>
+				<input type="text" name="email" placeholder="Email Address" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address" required>
 				<label for="password">Password:</label>
-				<input type="password" name="password" placeholder = "Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
+				<input type="password" name="password" placeholder = "Password"  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number." required>
 				<label for="verify">Verify password:</label>
-				<input type="password" name="verify" placeholder = "Verify password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number.">
-				<label for="user">Type of user:</label>
-				<select name="user">
+				<input type="password" name="verify" placeholder = "Verify password"  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Password must be at least 8 characters long, and include an upper case letter, a lower case letter and a number." required>
+				<label for="firstName">First Name:</label>
+				<input type="text" name="firstName" placeholder = "First name" pattern="[a-zA-Z]+" title="Please enter employee's first name" required>
+				<label for="surname">Surname:</label>
+				<input type="text" name="surname" placeholder="Surname" pattern="[a-zA-Z]+" title="Please enter employee's surname" required>
+				<label for="jobTitle">Job title:</label>
+				<input type="text" name="jobTitle" placeholder="Job Title" pattern="[a-zA-Z]+" title="Please enter employee's job title" required> 
+				<label for="role">Type of user:</label>
+				<select name="role" required>
 					<option value="admin">Admin</option>
-					<option value="user" selected>Employee</option>
+					<option value="employee" selected>Employee</option>
 				</select>
 				<input type="submit" value="Register">
 			</form>

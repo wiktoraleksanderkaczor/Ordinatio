@@ -21,6 +21,7 @@
     "bcrypt": "^3.0.8",
     "body-parser": "^1.19.0",
     "ejs": "^3.0.1",
+    "ejs-lint": "^1.0.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "first-run": "^2.0.0",
@@ -39,6 +40,7 @@
     "sqlite3": "^4.1.1",
     "unique-string": "^2.0.0",
     "uuid": "^3.4.0",
+    "validator": "^12.2.0",
     "yesno": "^0.3.1"
   }
 }

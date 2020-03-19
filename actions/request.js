@@ -2,11 +2,11 @@
 const cryptoController = require("../own_modules/cryptoController.js");
 const dbController = require("../own_modules/dbController.js");
 const acl = require("../own_modules/accessControl.js");
-
+const moment = require("moment");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -15,10 +15,10 @@ function get(req, res) {
 			permission = acl.ac.can(role).execute("create").sync().on("rota-request");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-					res.render("pages/request.ejs", { info: "" });
+				getRequestListAndRender(req, res, " ");
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});
@@ -26,7 +26,7 @@ function get(req, res) {
 
 function post(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function (err, role) {
 		if (err) {
 			console.log(err)
 		}
@@ -37,50 +37,31 @@ function post(req, res) {
 			if (permission.granted) {	
                 // Get the input from the request body.
                 const input = req.body;
-                
-                // Request definition from inputs.
-				const request = {
-					id: req.user.username+Date.now(),
-					name: input.choice,
-					start: input.start,
-					end: input.end
-				};
-
-				console.log(request);
-                // Get current user requests.
-                (dbController.getUserRequests(req.user.username, function callback(err, data) {
-                    if (err) {
-						console.log(err);
+                // Storing task in database for specific user.	
+				dbController.storeRequest(req.user.id, input.type, moment().format("YYYY-MM-DD - hh:mm"), input.startDate, input.endDate, input.startTime, input.endTime, function (err, result) {
+					if(err) {
+						getRequestListAndRender(req, res, err);
 					}
 					else {
-						// Convert to appropriate format for storage.
-						parsed = JSON.parse(data);
-						// Check if empty, if so, insert task in array.
-						if (data === JSON.stringify({})) {
-							parsed = [request];
-						}
-						// If not, assume that it is array, push task to array.
-						else {
-							parsed.push(request);
-						}
-						const new_data = JSON.stringify(parsed);
-
-						// Storing task in database for specific user.	
-						(dbController.storeRequest(req.user.username, new_data, function callback(err, result) {
-							if (err) {
-								throw err;
-							}
-							else {
-								console.log(result);
-								res.render("pages/request.ejs", {info: "The user was assigned the task successfully."});
-							}
-						}));
+						getRequestListAndRender(req, res, result);
 					}
-				}));
+				});
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
+		}
+	});
+}
+
+function getRequestListAndRender(req, res, message) {
+	dbController.getUserRequests(req.user.id, function (err, result) {
+		if(err) {
+			console.log(err);
+			res.render('pages/request.ejs', { username: req.user.firstName, requests: " ", info: err } );
+		}
+		else {
+			res.render('pages/request.ejs', { username: req.user.firstName, requests : result, info: message });
 		}
 	});
 }

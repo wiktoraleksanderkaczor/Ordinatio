@@ -12,14 +12,14 @@ const ac = new AccessControl();
 */
 
 // Grant user permissions.
-ac.grant('user')
+ac.grant('employee')
 	.execute('create').on('rota-request')
 	.execute('delete').on('rota-request')
 	.execute('read').on('rota-request')
 	.execute('view').on('schedule');
 
 // Create admin role which extends user role.
-ac.grant('admin').extend('user');
+ac.grant('admin').extend('employee');
 
 // Grant admin permissions.
 ac.grant('admin')

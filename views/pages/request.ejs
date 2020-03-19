@@ -11,18 +11,22 @@
 			<h1>Ordinatio Rota Request Page</h1>
             <form id="requestForm" method="POST" action="/request">
                 <!-- Start and end dates for rota or holiday -->
-                <label for="start">Start date:</label>
-                <input type="date" name="start">
-                <label for="end">End date:</label>
-                <input type="date" name="end">
+                <label for="startDate">Start date:</label>
+                <input type="date" name="startDate" required>
+				<label for="startTime">Start Time:</label>
+				<input type="time" name="startTime">
+                <label for="endDate">End date:</label>
+                <input type="date" name="endDate" required>
+				<label for="endTime">End Time:</label>
+				<input type="time" name="endTime">
 
                 <br>
 
                 <!-- Rota or holiday choice -->
-                <label for="choice">Rota or Holiday:</label>
-				<select name="choice">
-					<option value="holiday">Holiday</option>
-					<option value="rota" selected>Rota</option>
+                <label for="type">Rota or Shift Request:</label>
+				<select name="type" required>
+					<option value="holiday">Holiday request</option>
+					<option value="shift" selected>Shift request</option>
                 </select>
                 
 				<input type="submit" value="Request">
@@ -31,37 +35,31 @@
 			<form id="linksForm" method="GET" action="/main">
 				<input type="submit" value="Go back" formaction="/main" form="linksForm">
             </form>
-
-            <h3>Current requests:</h3>
-            <div class="col-lg-12" id="request-list">
-                <!-- Insert my list here -->                              
-            </div>
-            <script>
-                // Fetch JSON data from server
-                fetch('./rota_requests')
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    // Use the data to add requests to a HTML list.
-                    var listDiv = document.getElementById('request-list');
-                    var ul=document.createElement('ul');
-                    for (var i = 0; i < data.length; ++i) {
-                        var li=document.createElement('li');
-                        // Use innerHTML to set the text.
-                        li.innerHTML = data[i].start + " - " + data[i].end;   
-                        ul.appendChild(li);                                 
-                    }
-                    listDiv.appendChild(ul);
-                })
-                .catch(err => {
-                    console.log("Error with fetching Gantt chart data.");
-                });
-
-
-
-            </script>
+			<div>
+			<h1> Your pending requests: </h1>
+			<ul>	
+				<% for(var i = 0; i<requests.length; i++) {%>
+				<li>
+					Request id: <%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"") %>
+					<br>
+					Type: <%=JSON.stringify(requests[i].type).replace(/["]+/g,"") %> request
+					<br> 
+					Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%> 
+					<br>
+					Start date/time: <%=JSON.stringify(requests[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeStart).replace(/["]+/g,"")%> 
+					<br>
+					End date/time: <%=JSON.stringify(requests[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeEnd).replace(/["]+/g,"")%> 
+					<br>
+					<form id="cancelForm" method="POST" action="/">
+						<input type="submit" value="Cancel" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="cancelForm">
+					</form>
+					
+				</li>
+				<br>
+				<% } %>
+			</ul>
+			</div>
+  
             <h1><%= info %></h1>
 		</div>
 	</body>

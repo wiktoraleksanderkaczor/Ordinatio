@@ -5,7 +5,7 @@ const acl = require("../own_modules/accessControl.js");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.username, function callback(err, role) {
+	role = dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err);
 		}
@@ -17,7 +17,7 @@ function get(req, res) {
 				res.render("pages/assign.ejs", { info: "" });
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
     });
@@ -25,7 +25,7 @@ function get(req, res) {
 
 function post(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.username, function callback(err, role) {
+	(dbController.getUserRole(req.user.id, function callback(err, role) {
 		if (err) {
 			console.log(err)
 		}
@@ -36,52 +36,36 @@ function post(req, res) {
 			if (permission.granted) {	
 				// Get the input from the request body.
 				const input = req.body;
-
-				// Task definition from inputs.
-				const task = {
-					id: input.username+Date.now(),
-					name: input.choice,
-					start: input.start,
-					end: input.end
-				};
-
-				console.log(task);
-				
-				// Getting data for user to append.
-				(dbController.getUserTasks(input.username, function callback(err, data) { 
-					if (err) {
-						console.log(err);
-					}
-					else {
-						// Convert to appropriate format for storage.
-						parsed = JSON.parse(data);
-						console.log(parsed);
-						// Check if empty, if so, insert task in array.
-						if (data === JSON.stringify({})) {
-							parsed = [task];
-						}
-						// If not, assume that it is array, push task to array.
-						else {
-							parsed.push(task);
-						}
-
-						const new_data = JSON.stringify(parsed);
-						
-						// Storing task in database for specific user.	
-						(dbController.storeTask(input.username, new_data, function callback(err, result) {
-							if (err) {
-								throw err;
+				const dateTimeStart = input.startDate + " " + input.startTime;
+				const dateTimeEnd = input.endDate + " " + input.endTime;
+				switch(input.type) {
+					case "Shift":
+						dbController.storeShift(input.employeeId, dateTimeStart, dateTimeEnd, function (err, result) {
+							if(err) {
+								console.log(err);
+								res.render('pages/assign', { username: req.user.FirstName, info: err });
 							}
 							else {
 								console.log(result);
-								res.render("pages/assign.ejs", {info: "The user was assigned the task successfully."});
+								res.render('pages/assign', { username: req.user.firstName, info: result });
 							}
-						}));
-					}
-				}));
+						});
+						break;
+					case "Holiday":
+						dbController.storeHoliday(input.employeeId, input.startDate, input.endDate, function (err, result) {
+							if(err) {
+								console.log(err);
+								res.render('pages/assign', { username: req.user.firstName, info: err });
+							}
+							else {
+								res.render('pages/assign', { username: req.user.firstName, info: err });
+							}
+						});
+						break;
+				}
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.username });
+				res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
     }));
