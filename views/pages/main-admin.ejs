@@ -35,7 +35,7 @@
 						Start date/time: <%=JSON.stringify(requests[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeStart).replace(/["]+/g,"")%> 
 						<br>
 						End date/time: <%=JSON.stringify(requests[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeEnd).replace(/["]+/g,"")%>
-						<form id="acceptOrRejectForm" method="POST" action"/">
+						<form id="acceptOrRejectForm" method="POST" action="/">
 							<input type="submit" value="Accept" formaction="/acceptRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
 							<input type="submit" value="Reject" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
 						</form>
