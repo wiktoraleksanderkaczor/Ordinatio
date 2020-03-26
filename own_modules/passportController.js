@@ -4,6 +4,7 @@ const passport = require("passport");
 const sqlite3 = require("sqlite3");
 const bcrypt = require("bcrypt");
 const path = require("path");
+const moment = require("Moment");
 
 // Database file requirements.
 const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db"));
@@ -13,11 +14,11 @@ const db = new sqlite3.Database(path.join(__dirname, "..", "database", "users.db
 function initialize(passport) {
 	passport.use(new LocalStrategy(authenticateUser));
 	passport.serializeUser(function(user, done) {
-		return done(null, user.id);
+		return done(null, user.employeeId);
 	});
 
-	passport.deserializeUser(function(id, done) {
-		db.get("SELECT id, username FROM accounts WHERE id = ?", id, function(err, row) {
+	passport.deserializeUser(function(employeeId, done) {
+		db.get("SELECT * FROM accounts WHERE employeeId = ?", employeeId, function(err, row) {
     			if (!row) {
 				return done(null, false);
 			} 
@@ -42,11 +43,8 @@ function authenticateUser(username, password, done) {
 			return done(null, false, {alert: "No user found."});
 		}
 
-		console.log(user);
-		console.log(password);
-		console.log(user.password);
-		
 		if(bcrypt.compareSync(password, user.password)) {
+			console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: Successful login by user #" + user.employeeId + " - " + user.firstName + " " + user.surname + "(" + user.username + ")");
 			return done(null, user);
 		}
 		else {	

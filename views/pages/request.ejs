@@ -11,14 +11,14 @@
 			<h1>Ordinatio Rota Request Page</h1>
             <form id="requestForm" method="POST" action="/request">
                 <!-- Start and end dates for rota or holiday -->
-                <label for="startDate">Start date:</label>
-                <input type="date" name="startDate" required>
-				<label for="startTime">Start Time:</label>
-				<input type="time" name="startTime">
-                <label for="endDate">End date:</label>
-                <input type="date" name="endDate" required>
-				<label for="endTime">End Time:</label>
-				<input type="time" name="endTime">
+                <label for="dateStart">Start date:</label>
+                <input type="date" name="dateStart" required>
+				<label for="timeStart">Start Time:</label>
+				<input type="time" name="timeStart">
+                <label for="dateEnd">End date:</label>
+                <input type="date" name="dateEnd" required>
+				<label for="timeEnd">End Time:</label>
+				<input type="time" name="timeEnd">
 
                 <br>
 
@@ -60,7 +60,7 @@
 			</ul>
 			</div>
   
-            <h1><%= info %></h1>
+            <h1><%= JSON.stringify(info).replace(/["]+/g,"") %></h1>
 		</div>
 	</body>
 </html>

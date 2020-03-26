@@ -1,3 +1,7 @@
+// Module requirements
+const moment = require("moment");
+const path = require("path");
+
 // Own code requirements.
 const dbController = require("../own_modules/dbController.js");
 const acl = require("../own_modules/accessControl.js");
@@ -5,9 +9,9 @@ const acl = require("../own_modules/accessControl.js");
 
 function gantt(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.id, function callback(err, role) {
+	(dbController.getUserRole(req.user.employeeId, function callback(err, role) {
 		if (err) {
-			console.log(err);
+			console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err);
 		}
 		else {
 			// Check if role can do the action.
@@ -17,14 +21,14 @@ function gantt(req, res) {
 				// Getting data for user to append.
 				(dbController.getUserTasks(req.user.username, function callback(err, data) {
 					if (err) {
-						console.log(err);
+						console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err);
 					}
 					else {
 						// Convert to appropriate format for usage.
 						parsed = JSON.parse(data);
 						// Check if empty, if so, log error.
 						if (data === JSON.stringify({})) {
-							console.log("Error; " + req.user.username + " JSON empty.");
+							console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  "Error; " + req.user.username + " JSON empty.");
 						}
 						// If not, send to client requsting it.
 						else {
@@ -42,9 +46,9 @@ function gantt(req, res) {
 
 function requests(req, res) {
 	//Get role
-	(dbController.getUserRole(req.user.id, function callback(err, role) {
+	(dbController.getUserRole(req.user.employeeId, function callback(err, role) {
 		if (err) {
-			console.log(err);
+			console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err);
 		}
 		else {
 			// Check if role can do the action.
@@ -54,14 +58,14 @@ function requests(req, res) {
 				// Getting data for user to append.
 				(dbController.getUserRequests(req.user.username, function callback(err, data) {
 					if (err) {
-						console.log(err);
+						console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err);
 					}
 					else {
 						// Convert to appropriate format for usage.
 						parsed = JSON.parse(data);
 						// Check if empty, if so, log error.
 						if (data === JSON.stringify({})) {
-							console.log("Error; " + req.user.username + " JSON empty.");
+							console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  "Error; " + req.user.username + " JSON empty.");
 						}
 						// If not, send to client requsting it.
 						else {

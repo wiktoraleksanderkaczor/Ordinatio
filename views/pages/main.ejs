@@ -33,7 +33,7 @@
 				var gantt = new Gantt("#gantt", data);
 			})
 			.catch(err => {
-				console.log("Error with fetching Gantt chart data.");
+				console.log(moment().format("\n" + "YYYY-MM-DD - HH:mm:ss") + ": " +  "Error with fetching Gantt chart data.");
 			});
 		</script> -->
 		<div id=message_inbox>

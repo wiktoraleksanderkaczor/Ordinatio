@@ -1,3 +1,6 @@
+//Module requirements
+const moment = require("moment");
+
 // Own code requirements.
 const cryptoController = require("../own_modules/cryptoController.js");
 const dbController = require("../own_modules/dbController.js");
@@ -6,19 +9,19 @@ const acl = require("../own_modules/accessControl.js");
 
 function get(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.id, function callback(err, role) {
+	role = dbController.getUserRole(req.user.employeeId, function callback(err, role) {
 		if (err) {
-			console.log(err);
+			console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err);
 		}
 		else {
 			// Check if role can do the action.
 			permission = acl.ac.can(role).execute("register").sync().on("register");
 			// Continue if yes, reject if no.
 			if (permission.granted) {	
-				res.render("pages/register.ejs", { info: "" });
+				return res.render("pages/register.ejs", { info: "" });
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.firstName });
+				return res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});
@@ -26,9 +29,9 @@ function get(req, res) {
 
 function post(req, res) {
 	//Get role
-	role = dbController.getUserRole(req.user.id, function callback(err, role) {
+	role = dbController.getUserRole(req.user.employeeId, function callback(err, role) {
 		if (err) {
-			console.log(err)
+			console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  err)
 		}
 		else {
 			// Check if role can do the action.
@@ -40,15 +43,14 @@ function post(req, res) {
 					const input = req.body;
 					
 					if (input.user === "admin" && role === "admin") {
-						res.render("pages/register.ejs", { info: "Only the root account can create other administrators!" });
+						return res.render("pages/register.ejs", { info: "Only the root account can create other administrators!" });
 					}
 					else {
 						// Check that password verification matches.
 						if (input.password != input.verify) {
-							res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
+							return res.render("pages/register.ejs", { info: "Passwords do not match, please try again!" });
 						}
 						else {
-							console.log("\n -=- " + input.email + " -=- ");
 							// Check that there isn't another user already named the same.
 							(dbController.getUserByEmail(input.email, function callback(err, result) {
 								if (err) {
@@ -58,7 +60,7 @@ function post(req, res) {
 								else {
 									var user = result;
 									if (!user) {
-										console.log("The email address isn't taken.");
+										console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  "The email address isn't taken.");
 										try {
 											// Hash password.
 											cryptoController.hashPassword(input.username, input.password, function callback(err, result) {
@@ -66,28 +68,28 @@ function post(req, res) {
 													throw err;
 												}
 												else {
-													console.log("Password hash: " + result);
+													console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  "Password hash: " + result);
 													// Store user.
 													dbController.storeUser(input.firstName, input.surname, input.jobTitle, input.email, result, input.role, function callback(err, result) {
 														if (err) {
 															throw err;
 														}
 														else {
-															console.log(result);
-															res.render("pages/register.ejs", {info: "Employee " + input.firstName + " " + input.surname + " (" + input.email + ") sucessfully registered"});
+															console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  result);
+															return res.render("pages/register.ejs", {info: "Employee #" + result.newUserId + " - " + input.firstName + " " + input.surname + " (" + input.email + ") sucessfully registered"});
 														}
 													});
 												}
 											});
 										}
 										catch (e) {
-											console.log(e);
-											res.render("pages/register.ejs", {info: e});
+											console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " +  e);
+											return res.render("pages/register.ejs", {info: e});
 										}
 									}
 									else {
 										// Username is taken
-										res.render("pages/register.ejs", {info: "An employee account with that email address alread exists, please try again."});
+										return res.render("pages/register.ejs", {info: "An employee account with that email address alread exists, please try again."});
 									}
 								}
 							}));
@@ -95,11 +97,11 @@ function post(req, res) {
 					}
 				}
 				else {
-					res.render("pages/denied.ejs", { username: req.user.firstName });
+					return res.render("pages/denied.ejs", { username: req.user.firstName });
 				}
 			}
 			else {
-				res.render("pages/denied.ejs", { username: req.user.firstName });
+				return res.render("pages/denied.ejs", { username: req.user.firstName });
 			}
 		}
 	});
