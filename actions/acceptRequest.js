@@ -5,7 +5,7 @@ const path = require('path');
 // Own code requirements.
 const dbController = require("../own_modules/dbController.js");
 
-function time_now() { return "\n" + moment().format("YYYY-MM-DD - HH:mm:ss") + ": "; };
+function time_now() { return "\n[" + moment().format("YYYY-MM-DD - HH:mm:ss") + "]: "; };
 
 function message_time() { return moment().format("YYYY-MM-DD - HH:mm"); };
 
@@ -21,18 +21,21 @@ function post(req, res) {
                 dbController.getRequest(req.query.requestId, function(err, request) {
                     if (err) {
                         console.log(time_now() + err);
+						 res.redirect('/main');
                     } else {
                         //Add the request as either a shift or holiday then delete the request
                         if (request.type === "shift") {
                             dbController.storeTask(request.employeeId, "Shift", request.dateStart, request.dateEnd, request.timeStart, request.timeEnd, function(err, result) {
                                 if (err) {
                                     console.log(time_now() + err);
+									 res.redirect('/main');
                                 } else {
 
                                     //Store a message for the employee who requested the shift, informing them the request was approved.
                                     dbController.storeMessage(req.user.employeeId, request.employeeId, message_time(), "Your shift request (request id: " + request.requestId + ") was approved.", function(err, result) {
                                         if (err) {
                                             console.log(time_now() + err);
+											 res.redirect('/main');
                                         } else {
                                             console.log(time_now() + result);
 
@@ -40,6 +43,7 @@ function post(req, res) {
                                             dbController.storeMessage(req.user.employeeId, req.user.employeeId, message_time(), "You approved shift request #" + request.requestId + " for employee #" + request.employeeId + " - " + request.firstName + " " + request.surname + " (" + request.username + ")", function(err, result) {
                                                 if (err) {
                                                     console.log(time_now() + err);
+													 res.redirect('/main');
                                                 } else {
                                                     console.log(time_now() + result);
 
@@ -47,8 +51,10 @@ function post(req, res) {
                                                     dbController.deleteRequest(request.requestId, function(err, result) {
                                                         if (err) {
                                                             console.log(time_now() + err);
+															 res.redirect('/main');
                                                         } else {
                                                             console.log(time_now() + result);
+															 res.redirect('/main');
                                                         }
                                                     });
                                                 }
@@ -65,20 +71,24 @@ function post(req, res) {
                                 dbController.storeMessage(req.user.employeeId, request.employeeId, message_time(), "Your holiday request (request id: " + request.requestId + ") was approved.", function(err, result) {
                                     if (err) {
                                         console.log(time_now() + err);
+										 res.redirect('/main');
                                     } else {
                                         console.log(time_now() + result);
                                         //store a new message for the admin telling them they approved the holiday
                                         dbController.storeMessage(req.user.employeeId, req.user.employeeId, message_time(), "You approved holiday request #" + request.requestId + " for employee #" + request.employeeId + " - " + request.firstName + " " + request.surname + " (" + request.username + ")", function(err, result) {
                                             if (err) {
                                                 console.log(time_now() + err);
+												 res.redirect('/main');
                                             } else {
                                                 console.log(time_now() + result);
                                                 //Delete the holiday request from requests table
                                                 dbController.deleteRequest(request.requestId, function(err, result) {
                                                     if (err) {
                                                         console.log(time_now() + err);
+														 res.redirect('/main');
                                                     } else {
                                                         console.log(time_now() + result);
+														 res.redirect('/main');
                                                     }
                                                 });
                                             }
@@ -88,6 +98,7 @@ function post(req, res) {
 
                                 if (err) {
                                     console.log(time_now() + err);
+									 res.redirect('/main');
                                 } else {
                                     console.log(time_now() + result);
 
@@ -96,7 +107,7 @@ function post(req, res) {
                         }
                     }
                 });
-                res.redirect('/main');
+               
             } else {
                 return res.render('pages/denied.ejs', { username: req.user.firstName });
             }

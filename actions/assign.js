@@ -6,7 +6,7 @@ const dbController = require("../own_modules/dbController.js");
 const acl = require("../own_modules/accessControl.js");
 
 
-function time_now() { return "\n" + moment().format("YYYY-MM-DD - HH:mm:ss") + ": "; };
+function time_now() { return "\n[" + moment().format("YYYY-MM-DD - HH:mm:ss") + "]: "; };
 
 function message_time() { return moment().format("YYYY-MM-DD - HH:mm"); };
 
@@ -60,11 +60,11 @@ function post(req, res) {
                 //Ensure request start date/time and end date/time are valid
                 if (moment(momentStart).isAfter(momentEnd)) {
                     invalidAssignment = 1;
-                    return res.render('pages/assign.ejs', { username: req.user.firstName, info: "Invalid request: the task end time must be after the task start time." });
+                    return res.render('pages/assign.ejs', { username: req.user.firstName, info: "Invalid request: the end time must be after the start time." });
                 }
                 if (moment(momentStart).isSame(momentEnd)) {
                     invalidAssignment = 1;
-                    return res.render('pages/assign.ejs', { username: req.user.firstName, info: "Invalid request: the task start time and end time are the same." });
+                    return res.render('pages/assign.ejs', { username: req.user.firstName, info: "Invalid request: the start time and end time are the same." });
                 }
 
                 //If assignment is logically valid, proceed to check for clashes 
@@ -120,12 +120,12 @@ function post(req, res) {
                                                     // lies between the start and end date of an existing request..
                                                     if (moment(momentStart).isBetween(requestMomentStart, requestMomentEnd) === true ||
                                                         moment(momentEnd).isBetween(requestMomentStart, requestMomentEnd) === true ||
+														moment(requestMomentStart).isBetween(momentStart, momentEnd) === true ||
                                                         moment(momentStart).isSame(requestMomentStart) === true ||
                                                         moment(momentEnd).isSame(requestMomentStart) === true ||
                                                         moment(momentStart).isSame(requestMomentEnd) === true ||
-                                                        moment(momentEnd).isSame(requestMomentEnd) === true ||
-                                                        moment(requestMomentStart).isBetween(momentStart, momentEnd) === true ||
-                                                        moment(requestMomentEnd).isBetween(momentStart, momentEnd)) {
+                                                        moment(momentEnd).isSame(requestMomentEnd) === true
+                                                    ) {
 
                                                         //add to list of clashing requests
                                                         requestClashes.push(pendingRequests[i]);
@@ -150,25 +150,26 @@ function post(req, res) {
                                                             // lies between the start and end date of an existing request..
                                                             if (moment(momentStart).isBetween(taskMomentStart, taskMomentEnd) === true ||
                                                                 moment(momentEnd).isBetween(taskMomentStart, taskMomentEnd) === true ||
+																moment(taskMomentStart).isBetween(momentStart, momentEnd) === true ||
                                                                 moment(momentStart).isSame(taskMomentStart) === true ||
                                                                 moment(momentEnd).isSame(taskMomentStart) === true ||
                                                                 moment(momentStart).isSame(taskMomentEnd) === true ||
-                                                                moment(momentEnd).isSame(taskMomentEnd) === true ||
-                                                                moment(taskMomentStart).isBetween(momentStart, momentEnd) === true ||
-                                                                moment(taskMomentEnd).isBetween(momentStart, momentEnd) === true) {
-
-                                                                console.log(time_now() + "Invalid assignment - clash detected with task #" + userTasks[k].taskId + ".");
-                                                                taskClashes.push(userTasks[k]);
+                                                                moment(momentEnd).isSame(taskMomentEnd) === true
+																) {
+																console.log(time_now() + "Invalid assignment - clash detected with task #" + userTasks[k].taskId + ".");
+																if(input.autoCancel) {
+																	taskClashes.push(userTasks[k]);
+																}
+																else {
+																	return res.render('pages/assign', { username: req.user.firstName, info: "Invalid assignment - clash detected with " + userTasks[k].type + " #" + userTasks[k].taskId + ", consider cancelling that " + userTasks[k].type + " first." });
+																}
                                                             }
                                                         }
                                                         if (k === userTasks.length) {
-                                                            console.log(time_now() + "Checked " + k + "tasks for user #" + employeeId + ", " + taskClashes.length + " clashes detected.");
+                                                            console.log(time_now() + "Checked " + k + " tasks for user #" + employeeId + ", " + taskClashes.length + " clashes detected.");
 
                                                             if (input.autoCancel && (taskClashes.length || requestClashes.length)) {
                                                                 deleteClashes(req.user, res, input, employeeId, requestClashes, taskClashes);
-                                                            } else if (taskClashes.length || requestClashes.length) {
-                                                                var message_text = "Checked " + k + "tasks for user #" + employeeId + ", " + taskClashes.length + " clashes detected, didn't store task.";
-                                                                res.render('pages/assign', { username: req.user.firstName, info: message_text });
                                                             } else {
                                                                 storeAndRender(req.user, res, employeeId, input.type, input.dateStart, input.timeStart, input.dateEnd, input.timeEnd);
                                                             }
@@ -267,8 +268,8 @@ function storeAndRender(user, res, employeeId, type, dateStart, timeStart, dateE
             });
 
             // Store message for administrator and render page for user.
-            var message_text = "You assigned task #" + storeResult.newTaskId + " (" + dateStart + " " +
-                timeStart + " - " + dateEnd + " " + timeEnd + ") to user " + employeeId + ".";
+            var message_text = "You assigned " + type + " #" + storeResult.newTaskId + " (" + dateStart + " " +
+                timeStart + " - " + dateEnd + " " + timeEnd + ") to user #" + employeeId + ".";
 
             dbController.storeMessage(employeeId, user.employeeId, message_time(), message_text, function(err, result) {
                 if (err) {

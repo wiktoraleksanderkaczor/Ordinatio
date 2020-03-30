@@ -4,7 +4,7 @@ const dbController = require("../own_modules/dbController.js");
 const acl = require("../own_modules/accessControl.js");
 const moment = require("moment");
 
-function time_now() { return "\n" + moment().format("YYYY-MM-DD - HH:mm:ss") + ": "; };
+function time_now() { return "\n[" + moment().format("YYYY-MM-DD - HH:mm:ss") + "]: "; };
 
 function message_time() { return moment().format("YYYY-MM-DD - HH:mm"); };
 
@@ -54,14 +54,14 @@ function post(req, res) {
 
                 //Ensure request start date/time and end date/time are valid
                 if (moment(momentStart).isAfter(momentEnd)) {
-                    console.log(time_now() + "Invalid request: the task end time must be after the task start time.");
+                    console.log(time_now() + "Invalid request: the end time must be after the start time.");
                     invalidRequest = 1;
-                    getRequestListAndRender(req.user, res, "Invalid request: the task end time must be after the task start time.");
+                    getRequestListAndRender(req.user, res, "Invalid request: the end time must be after the start time.");
                 }
                 if (moment(momentStart).isSame(momentEnd)) {
-                    console.log(time_now() + "Invalid request: the task start time and end time are the same.");
+                    console.log(time_now() + "Invalid request: the start time and end time are the same.");
                     invalidRequest = 1;
-                    getRequestListAndRender(req.user, res, "Invalid request: the task start time and end time are the same.");
+                    getRequestListAndRender(req.user, res, "Invalid request: the start time and end time are the same.");
                 }
 
                 //If the request is logically valid, proceed
@@ -99,17 +99,18 @@ function post(req, res) {
                                             requestMomentStart = moment(requestDateTimeStart);
                                             requestMomentEnd = moment(requestDateTimeEnd);
 
-                                            //If the start date of the user's request is the same as the start or end date of an existing request, or lies between the start and end date of an existing request..
+                                            //If the start date of the user's request is the same as the start or end date of an existing request, or lies between the start and end date of an existing request, or covers the entire duration of an existing request
                                             if (moment(momentStart).isBetween(requestMomentStart, requestMomentEnd) === true ||
                                                 moment(momentEnd).isBetween(requestMomentStart, requestMomentEnd) === true ||
+												moment(requestMomentStart).isBetween(momentStart, momentEnd) === true ||
                                                 moment(momentStart).isSame(requestMomentStart) === true ||
                                                 moment(requestMomentEnd) === true ||
-                                                moment(momentEnd).isSame(requestMomentStart)) {
-                                                //Mark the request as invalid.
-                                                requestInvalid = 1;
-                                                console.log(time_now() + "Invalid request - clash found with request #" + pendingRequests[i].requestId);
-                                                getRequestListAndRender(req.user, res, "Invalid request: you already have a pending task or holiday request for that date/time range.");
-                                                break;
+                                                moment(momentEnd).isSame(requestMomentStart) === true) {
+													//Mark the request as invalid.
+													requestInvalid = 1;
+													console.log(time_now() + "Invalid request - clash found with request #" + pendingRequests[i].requestId);
+													getRequestListAndRender(req.user, res, "Invalid request: you already have a pending shift or holiday request for that date/time range.");
+													break;
                                             }
                                         }
                                         if (i === pendingRequests.length) {
@@ -123,20 +124,20 @@ function post(req, res) {
                                                     taskDateTimeEnd = userTasks[j].dateEnd + " " + userTasks[j].timeEnd;
                                                     taskMomentStart = moment(taskDateTimeStart);
                                                     taskMomentEnd = moment(taskDateTimeEnd);
-                                                }
-                                                if (moment(momentStart).isBetween(taskMomentStart, taskMomentEnd) === true ||
-                                                    moment(momentEnd).isBetween(taskMomentStart, taskMomentEnd) === true ||
-                                                    moment(momentStart).isSame(taskMomentStart) === true ||
-                                                    moment(taskMomentEnd) === true ||
-                                                    moment(momentEnd).isSame(taskMomentStart) === true) {
-                                                    //Mark the request as invalid.
-                                                    requestInvalid = 1;
-                                                    console.log(time_now() + "Invalid request - clash found with existing task #" + userTasks[j].taskId);
-                                                    getRequestListAndRender(req.user, res, "Invalid request: you already have a task for that date/time range.");
-                                                    break;
-                                                };
-
-
+                                                
+													if (moment(momentStart).isBetween(taskMomentStart, taskMomentEnd) === true ||
+														moment(momentEnd).isBetween(taskMomentStart, taskMomentEnd) === true ||
+														moment(taskMomentStart).isBetween(momentStart, momentEnd) === true ||
+														moment(momentStart).isSame(taskMomentStart) === true ||
+														moment(taskMomentEnd) === true ||
+														moment(momentEnd).isSame(taskMomentStart) === true) {
+															//Mark the request as invalid.
+															requestInvalid = 1;
+															console.log(time_now() + "Invalid request - clash found with existing task #" + userTasks[j].taskId);
+															getRequestListAndRender(req.user, res, "Invalid request: you already have a " + userTasks[j].type + " for that date/time range.");
+															break;
+													};
+												}
                                                 if (j === userTasks.length) {
                                                     console.log(time_now() + "Checked " + j + " tasks for user #" + req.user.employeeId + ", no clashes detected.");
 
