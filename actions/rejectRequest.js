@@ -20,6 +20,7 @@ function post(req, res) {
             dbController.getRequest(req.query.requestId, function(err, request) {
                 if (err) {
                     console.log(time_now() + err);
+					res.redirect('/main');
                 } else {
                     console.log(time_now() + request);
                     //if the user is root or admin, OR if the request was made by the logged in user, allow them to cancel/reject it 
@@ -31,6 +32,7 @@ function post(req, res) {
                         dbController.storeMessage(req.user.employeeId, req.user.employeeId, message_time(), message_text, function(err, result) {
                             if (err) {
                                 console.log(time_now() + err);
+								res.redirect('/main');
                             } else {
                                 console.log(time_now() + result);
 
@@ -39,6 +41,7 @@ function post(req, res) {
                                 dbController.storeMessage(req.user.employeeId, request.employeeId, message_time(), message_text, function(err, result) {
                                     if (err) {
                                         console.log(time_now() + err);
+										res.redirect('/main');
                                     } else {
                                         console.log(time_now() + result);
 
@@ -46,9 +49,10 @@ function post(req, res) {
                                         dbController.deleteRequest(request.requestId, function(err, result) {
                                             if (err) {
                                                 console.log(time_now() + err);
+												res.redirect('/main');
                                             } else {
                                                 console.log(time_now() + result);
-
+												res.redirect('/main');
                                             }
                                         });
                                     }
@@ -63,7 +67,6 @@ function post(req, res) {
             //Otheriwse, redirect to denied page.
         }
     });
-    res.redirect('/main');
 }
 
 function get(req, res) {
