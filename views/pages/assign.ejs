@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
-		<title>Ordinatio</title>
-	</head>
-	<body>
-		<div>
-			<h1>Ordinatio Rota Assignment Page</h1>
-            <form id="assignForm" method="POST" action="/assign">
-                <!-- User to assign rota or holiday to -->
-				<label for="EmployeeId">Employee ID</label>
-                <input type="text" name="employeeId" placeholder="Employee ID" pattern="\d" title="Enter employee's ID" required>
-                
-                <!-- Start and end dates for rota or holiday -->
-                <label for="dateStart">Start date:</label>
-                <input type="date" name="dateStart" required>
-				<label for="timeStart">Start Time:</label>
-				<input type="time" name="timeStart">
-                <label for="dateEnd">End date:</label>
-                <input type="date" name="dateEnd" required>
-				<label for="timeEnd">End Time:</label>
-				<input type="time" name="timeEnd">
-				
 
-                <br>
+<head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+    <title>Ordinatio</title>
+</head>
 
-                <!-- Rota or holiday choice -->
-                <label for="type">Shift or Holiday:</label>
-				<select name="type">
+<body>
+    <div>
+        <h1>Ordinatio Rota Assignment Page</h1>
+        <form id="assignForm" method="POST" action="/assign">
+            <!-- User to assign rota or holiday to -->
+            <label for="EmployeeEmail">Employee ID</label>
+            <input type="text" name="email" placeholder="Email" title="Enter employee's email" required>
+
+            <!-- Start and end dates for rota or holiday -->
+            <label for="dateStart">Start date:</label>
+            <input type="date" name="dateStart" required>
+            <label for="timeStart">Start Time:</label>
+            <input type="time" name="timeStart">
+            <label for="dateEnd">End date:</label>
+            <input type="date" name="dateEnd" required>
+            <label for="timeEnd">End Time:</label>
+            <input type="time" name="timeEnd">
+
+
+            <br>
+
+            <!-- Rota or holiday choice -->
+            <label for="type">Shift or Holiday:</label>
+            <select name="type">
 					<option value="Holiday">Holiday</option>
 					<option value="Shift"selected>Shift</option>
                 </select>
-				
-				<!--Auto cancel clashing shifts/holidays checkbox -->
-				<label for="autoCancelCheckbox">Auto-cancel shifts/holidays that clash with the new assignment?</label>
-				<input type="checkbox" name="autoCancel" value="1">
-				<input type="submit" value="Assign">
-            </form>
-            
-			<form id="linksForm" method="GET" action="/main">
-				<input type="submit" value="Go back" formaction="/main" form="linksForm">
-            </form>
-            
-			<h1><%= info %></h1>
-		</div>
-	</body>
+
+            <!--Auto cancel clashing shifts/holidays checkbox -->
+            <label for="autoCancelCheckbox">Auto-cancel shifts/holidays that clash with the new assignment?</label>
+            <input type="checkbox" name="autoCancel" value="1">
+            <input type="submit" value="Assign">
+        </form>
+
+        <form id="linksForm" method="GET" action="/main">
+            <input type="submit" value="Go back" formaction="/main" form="linksForm">
+        </form>
+
+        <h1>
+            <%= info %>
+        </h1>
+    </div>
+</body>
+
 </html>

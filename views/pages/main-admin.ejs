@@ -1,67 +1,81 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="stylesheet" type="text/css" href="styles/style.css"/>
-		<title>Admin</title>
-	</head>
-	<body>
-		<h1>Welcome <%= username %></h1>
-		<p>Admin Page</p>
-		<div>
-			<form id="logOutForm" method="POST" action="/">
-				<input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
-			</form>
-			<form id="registerForm" method="GET" action="/">
-				<input type="submit" value="Register new user" formaction="/register" form="registerForm">
-			</form>
-			<form id="assignForm" method="GET" action="/">
-				<input type="submit" value="Assign rota or holiday" formaction="/assign" form="assignForm">
-			</form>
-			<div id=pending_requests>
-				<h1>Pending shift/holiday requests:</h1>
-				<ul>	
-					<% for(var i = 0; i< requests.length; i++) { %>
-					<li>
-						Request ID: <%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>
-						<br>
-						Type: <%=JSON.stringify(requests[i].type).replace(/["]+/g,"")%> request
-						<br>
-						Requested by: <%=JSON.stringify(requests[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(requests[i].surname).replace(/["]+/g,"")%> (<%=JSON.stringify(requests[i].username).replace(/["]+/g,"")%>) 
-						<br> 
-						Date/time Submitted: <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%>
-						<br>
-						Start date/time: <%=JSON.stringify(requests[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeStart).replace(/["]+/g,"")%> 
-						<br>
-						End date/time: <%=JSON.stringify(requests[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(requests[i].timeEnd).replace(/["]+/g,"")%>
-						<form id="acceptOrRejectForm" method="POST" action="/">
-							<input type="submit" value="Accept" formaction="/acceptRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
-							<input type="submit" value="Reject" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>" form="acceptOrRejectForm">
-						</form>
-					</li>
-					<br>
-				<% } %>
-				</ul>
-			</div>
-			<div id=message_inbox>
-				<h1>Latest messages:</h1>
-				<ul>
-					<% for(var i = 0; i< messages.length; i++) { %>
-					<li>
-						From: <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> - <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%> 
-						<br>
-						<%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%> - <%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%> 
-					</li>
-					<br>
-				<% } %>
-				</ul>
-			</div>
-		</div>
-		<div>
-			<br>
-			<%=info%>
-			<br>
-		</div>
-	</body>
+
+<head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+    <title>Admin</title>
+</head>
+
+<body>
+    <h1>Welcome
+        <%= username %>
+    </h1>
+    <p>Admin Page</p>
+    <div>
+        <form id="logOutForm" method="POST" action="/">
+            <input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
+        </form>
+        <form id="registerForm" method="GET" action="/">
+            <input type="submit" value="Register new user" formaction="/register" form="registerForm">
+        </form>
+        <form id="assignForm" method="GET" action="/">
+            <input type="submit" value="Assign rota or holiday" formaction="/assign" form="assignForm">
+        </form>
+        <div id=pending_requests>
+            <h1>Pending shift/holiday requests:</h1>
+            <ul>
+                <% for(var i = 0; i< requests.length; i++) { %>
+                    <li>
+                        Request ID:
+                        <%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>
+                            <br> Type:
+                            <%=JSON.stringify(requests[i].type).replace(/["]+/g,"")%> request
+                                <br> Requested by:
+                                <%=JSON.stringify(requests[i].firstName).replace(/["]+/g,"")%>
+                                    <%=JSON.stringify(requests[i].surname).replace(/["]+/g,"")%> (
+                                        <%=JSON.stringify(requests[i].username).replace(/["]+/g,"")%>)
+                                            <br> Date/time Submitted:
+                                            <%=JSON.stringify(requests[i].dateTimeSubmitted).replace(/["]+/g,"")%>
+                                                <br> Start date/time:
+                                                <%=JSON.stringify(requests[i].dateStart).replace(/["]+/g,"")%> -
+                                                    <%=JSON.stringify(requests[i].timeStart).replace(/["]+/g,"")%>
+                                                        <br> End date/time:
+                                                        <%=JSON.stringify(requests[i].dateEnd).replace(/["]+/g,"")%> -
+                                                            <%=JSON.stringify(requests[i].timeEnd).replace(/["]+/g,"")%>
+                                                                <form id="acceptOrRejectForm" method="POST" action="/">
+                                                                    <input type="submit" value="Accept" formaction="/acceptRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/[" ]+/g, "")%>" form="acceptOrRejectForm">
+                                                                    <input type="submit" value="Reject" formaction="/rejectRequest/?requestId=<%=JSON.stringify(requests[i].requestId).replace(/[" ]+/g, "")%>" form="acceptOrRejectForm">
+                                                                </form>
+                    </li>
+                    <br>
+                    <% } %>
+            </ul>
+        </div>
+        <div id=message_inbox>
+            <h1>Latest messages:</h1>
+            <ul>
+                <% for(var i = 0; i< messages.length; i++) { %>
+                    <li>
+                        From:
+                        <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%>
+                            <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> -
+                                <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%>
+                                    <br>
+                                    <%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%> -
+                                        <%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%>
+                    </li>
+                    <br>
+                    <% } %>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <br>
+        <%=info%>
+            <br>
+    </div>
+</body>
+
 </html>
