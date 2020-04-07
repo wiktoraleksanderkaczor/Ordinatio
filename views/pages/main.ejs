@@ -1,54 +1,78 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="stylesheet" type="text/css" href="styles/style.css" />
-		<title>Home</title>
-	</head>
-	<body>
-		<h1>Welcome <%= username %></h1>
-		<p>Dashboard:</p>
-		<div>
-			<form id="logOutForm" method="POST" action="/">
-				<input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
-			</form>
-			<form id="requestForm" method="GET" action="/"> 
-				<input type="submit" value="Request rota or holiday." formaction="/request" form="requestForm"> 
-			</form>
-		</div>
-		<!--<svg id="gantt"></svg>
-		<script src="libs/frappe-gantt.min.js"></script>
-		<script src="libs/snap.svg-min.js"></script>
-		<script src="libs/moment.min.js"></script>
-		<link rel="stylesheet" href="styles/frappe-gantt.css"/>
-		<script>
-			// Fetch JSON data from server
-			fetch('./gantt')
-			.then(response => {
-				return response.json();
-			})
-			.then(data => {
-				// Use the data to add task to Gantt chart.
-				var gantt = new Gantt("#gantt", data);
-			})
-			.catch(err => {
-				console.log(moment().format("\n" + "YYYY-MM-DD - HH:mm:ss") + ": " +  "Error with fetching Gantt chart data.");
-			});
-		</script> -->
-		<div id=message_inbox>
-				<h1>Latest messages:</h1>
-				<ul>
-					<% for(var i = 0; i< messages.length; i++) { %>
-					<li>
-						From: <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> - <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%> 
-						<br>
-							<%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%> 
-						<br>		-<%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%> 
-					</li>
-					<br>
-				<% } %>
-				</ul>
-		</div>
-	</body>
+
+<head>
+    <meta charset="utf8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+    <title>Home</title>
+</head>
+
+<body>
+    <h1>Welcome
+        <%= username %>
+    </h1>
+    <p>Dashboard:</p>
+    <div>
+        <form id="logOutForm" method="POST" action="/">
+            <input type="submit" value="Log out" formaction="/logOut?_method=DELETE" form="logOutForm">
+        </form>
+        <form id="requestForm" method="GET" action="/">
+            <input type="submit" value="Request rota or holiday." formaction="/request" form="requestForm">
+        </form>
+    </div>
+    <svg id="gantt"></svg>
+    <script src="libs/frappe-gantt.min.js"></script>
+    <script src="libs/snap.svg-min.js"></script>
+    <script src="libs/moment.min.js"></script>
+    <link rel="stylesheet" href="styles/frappe-gantt.css" />
+    <script>
+        function time_now() {
+            return "\n[" + moment().format("YYYY-MM-DD - HH:mm:ss") + "]: ";
+        };
+        // Fetch JSON data from server
+        fetch('./gantt')
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                // Use the data to add task to Gantt chart.
+                var gantt = new Gantt("#gantt", data, {
+                    // can be a function that returns html
+                    // or a simple html string
+                    custom_popup_html: function(task) {
+                        // the task object will contain the updated
+                        // dates and progress value
+                        return `
+							<div class="details-container">
+							<p>Hour start ${task.timeStart}</p>
+							<p>Hour end: ${task.timeEnd}</p>
+							</div>`;
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(time_now() + "Error with fetching Gantt chart data.");
+            });
+    </script>
+    <div id=message_inbox>
+        <h1>Latest messages:</h1>
+        <ul>
+            <% for(var i = 0; i< messages.length; i++) { %>
+                <li>
+                    From:
+                    <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%>
+                        <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> -
+                            <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%>
+                                <br>
+                                <%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%>
+                                    <br> -
+                                    <%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%>
+                </li>
+                <br>
+                <% } %>
+        </ul>
+    </div>
+</body>
+
 </html>
