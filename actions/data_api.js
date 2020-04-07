@@ -31,6 +31,7 @@ function gantt(req, res) {
                                 name: data[task].type,
                                 start: data[task].dateStart,
                                 end: data[task].dateEnd,
+                                progress: 100,
                                 timeStart: data[task].timeStart,
                                 timeEnd: data[task].timeEnd
                             })
