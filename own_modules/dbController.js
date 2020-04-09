@@ -13,7 +13,7 @@ function initialise() {
         db.run("CREATE TABLE accounts(employeeId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, firstName TEXT, surname TEXT, jobTitle, username TEXT, password TEXT, role TEXT)");
         db.run("CREATE TABLE requests(requestId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateTimeSubmitted TEXT, dateStart TEXT, dateEnd TEXT, timeStart TEXT, timeEnd TEXT)");
         db.run("CREATE TABLE tasks(taskId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, employeeId INTEGER, type TEXT, dateStart TEXT, dateEnd TEXT, timeStart TEXT, timeEnd TEXT)");
-        db.run("CREATE TABLE messages(messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, dateTimeSubmitted TEXT, body TEXT, senderId INTEGER, recipientId INTEGER)");
+        db.run("CREATE TABLE messages(messageId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, sender TEXT, recipientId INTEGER, dateTimeSubmitted TEXT, body TEXT)");
     });
 }
 
@@ -57,25 +57,34 @@ function deleteUser(employeeId, callback) {
 
 //function to store a message in the messages table
 function storeMessage(senderId, recipientId, dateTimeSubmitted, body, callback) {
-    db.run("INSERT INTO messages (senderId, recipientId, dateTimeSubmitted, body) VALUES($senderId, $recipientId, $dateTimeSubmitted, $body)", {
-        $senderId: senderId,
-        $recipientId: recipientId,
-        $dateTimeSubmitted: dateTimeSubmitted,
-        $body: body
-    }, (err) => {
-        if (err) {
-            callback(err, null);
-        } else {
-            db.get("SELECT last_insert_rowid() AS newMessageId",
-                (err, row) => {
-                    if (err) {
-                        console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + err);
-                    } else {
-                        callback(null, { message: "New message #" + row.newMessageId + " for user " + recipientId + " stored.", newMessageId: row.newMessageId });
-                    }
-                });
-        }
-    });
+	
+	getUserById(senderId, function (err, sender) {
+		if(err) {
+			console.log(time_now() + err);
+		}
+		else {
+			  db.run("INSERT INTO messages (sender, recipientId, dateTimeSubmitted, body) VALUES($sender, $recipientId, $dateTimeSubmitted, $body)", {
+					$sender: JSON.stringify(sender),
+					$recipientId: recipientId,
+					$dateTimeSubmitted: dateTimeSubmitted,
+					$body: body
+				}, (err) => {
+					if (err) {
+						callback(err, null);
+					} else {
+						db.get("SELECT last_insert_rowid() AS newMessageId",
+							(err, row) => {
+								if (err) {
+									console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + err);
+								} else {
+									callback(null, { message: "New message #" + row.newMessageId + " for user " + recipientId + " stored.", newMessageId: row.newMessageId });
+								}
+							});
+					}
+				});
+		}
+	});
+  
 }
 
 //function to retrieve a message by its message employeeId
@@ -102,6 +111,7 @@ function getUserMessages(employeeId, callback) {
             callback(err, null);
         } else {
             callback(null, rows);
+		
         }
     });
 }
@@ -384,13 +394,25 @@ function getAllTasks(callback) {
 
 //Function to retrieve all shifts on the system
 function getAllShifts(callback) {
-	db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.type = 'Shift'", (err, rows) => {
+	db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.type = 'Shift' ORDER BY tasks.dateStart ASC", (err, rows) => {
         if (err, rows) {
             callback(err, rows);
         } else {
             callback(null, rows);
         }
     });
+}
+
+//Function to retrieve all holidays on the system
+function getAllHolidays(callback) {
+	db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.type = 'Holiday' ORDER BY tasks.dateStart ASC", (err, rows) => {
+		if(err, rows) {
+			callback(err, rows);
+		}
+		else {
+			callback(null, rows);
+		}
+	});
 }
 
 //Function to return shifts with matching start and end times to a given shift 
@@ -426,6 +448,7 @@ module.exports.getAllTasks = getAllTasks;
 module.exports.getAllRequests = getAllRequests;
 module.exports.getAllShifts = getAllShifts;
 module.exports.getMatchingShifts = getMatchingShifts;
+module.exports.getAllHolidays = getAllHolidays;
 
 module.exports.initialise = initialise;
 module.exports.storeTask = storeTask;

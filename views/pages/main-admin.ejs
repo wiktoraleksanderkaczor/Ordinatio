@@ -60,42 +60,60 @@
         </div>
 		<br>
 			<h1>Upcoming Shifts:</h1>
-			<% for(var i = 0; i < shifts.length; i++) { %>
-				<div>
-					<% var taskIds = []; %>
-					Start time: <%=JSON.stringify(shifts[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeStart).replace(/["]+/g,"")%>
-					<br>
-					End time: <%=JSON.stringify(shifts[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeEnd).replace(/["]+/g,"")%>
-					<br>
-					Employees: 
-					<ul>
-						<% for(var j = 0; j < shifts[i].employees.length; j++) { 
-							taskIds.push(JSON.stringify(shifts[i].employees[j].employeeShiftId));
-						%>
-							<li>
-							<%=JSON.stringify(shifts[i].employees[j].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(shifts[i].employees[j].surname).replace(/["]+/g,"")%> (
-							<%=JSON.stringify(shifts[i].employees[j].username).replace(/["]+/g,"")%>) - <%=JSON.stringify(shifts[i].employees[j].jobTitle).replace(/["]+/g,"")%> <form id="removeEmployeeForm" method="POST" action="/">
-								<input type="submit" value="Remove employee" formaction="/cancelTask/?taskIds=[<%=shifts[i].employees[j].employeeShiftId%>]" form="removeEmployeeForm">
-								</form>
-							</li>
-						<% }%>
-					</ul>
-					<form id="cancelShiftForm" method="POST" action="/">
-						<input type="submit" value="Cancel" formaction="/cancelTask/?taskIds=<%=JSON.stringify(taskIds)%>" form="cancelShiftForm">
-					</form>
-				</div>
-				<br>
-			<% }%>
-        <br>
+			<ul>
+				<%for(var i = 0; i < shifts.length; i++) {%>
+					<li> Shift Id: #<%=JSON.stringify(shifts[i].taskId).replace(/["]+/g,"")%>
+						<br>
+						Start date/time: <%=JSON.stringify(shifts[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeStart).replace(/["]+/g,"")%>
+						<br>
+						End date/time: <%=JSON.stringify(shifts[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeEnd).replace(/["]+/g,"")%>
+						<br>
+						Employee: Employee #<%=JSON.stringify(shifts[i].employeeId).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(shifts[i].surname).replace(/["]+/g,"")%> (<%=JSON.stringify(shifts[i].username).replace(/["]+/g,"")%>)
+						<br>
+						<form id="cancelShiftForm" method="POST" action="/">
+							<input type="submit" value="Cancel Shift #<%=JSON.stringify(shifts[i].taskId).replace(/["]+/g,"")%>" formaction="/cancelTask/?taskId=<%=JSON.stringify(shifts[i].taskId).replace(/["]+/g,"")%>" form="cancelShiftForm">
+						</form>
+					</li>
+				<%}%>
+			</ul>
+		
+		
+		
+			<h1>Upcoming Holidays:</h1>
+			<ul>
+				<%for(var i = 0; i < holidays.length; i++) {%>
+					<li> Holiday Id: #<%=JSON.stringify(holidays[i].taskId).replace(/["]+/g,"")%>
+						<br>
+						Start date/time: <%=JSON.stringify(holidays[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(holidays[i].timeStart).replace(/["]+/g,"")%>
+						<br>
+						End date/time: <%=JSON.stringify(holidays[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(holidays[i].timeEnd).replace(/["]+/g,"")%>
+						<br>
+						Employee: Employee #<%=JSON.stringify(holidays[i].employeeId).replace(/["]+/g,"")%> - <%=JSON.stringify(holidays[i].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(holidays[i].surname).replace(/["]+/g,"")%> (<%=JSON.stringify(holidays[i].username).replace(/["]+/g,"")%>)
+						<br>
+						<form id="cancelHolidayForm" method="POST" action="/">
+							<input type="submit" value="Cancel Holiday #<%=JSON.stringify(holidays[i].taskId).replace(/["]+/g,"")%>" formaction="/cancelTask/?taskId=<%=JSON.stringify(holidays[i].taskId).replace(/["]+/g,"")%>" form="cancelHolidayForm">
+						</form>
+					</li>
+				<%}%>
+			</ul>
+		
+       
 		<div id=message_inbox>
             <h1>Latest messages:</h1>
             <ul>
-                <% for(var i = 0; i< messages.length; i++) { %>
+                <% for(var i = 0; i< 10; i++) { 
+					var senderObj = JSON.parse(messages[i].sender)%>
                     <li>
                         From:
-                        <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%>
-                            <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> -
-                                <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%>
+						<% if(senderObj.username === userObj.username) {
+							%>
+						System
+						<%} else 
+						{%>
+                        <%=JSON.stringify(senderObj.firstName).replace(/["]+/g,"")%>
+                            <%=JSON.stringify(senderObj.surname).replace(/["]+/g,"")%> -
+                                <%=JSON.stringify(senderObj.username).replace(/["]+/g,"")%>
+						<%}%>
                                     <br>
                                     <%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%> -
                                         <%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%>

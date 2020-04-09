@@ -188,8 +188,9 @@ function post(req, res) {
                             });
                         }
                     });
+				}
 
-                }
+                
             } else {
                 return res.render("pages/denied.ejs", { username: req.user.firstName });
             }
@@ -261,8 +262,7 @@ function storeAndRender(user, res, employeeId, type, dateStart, timeStart, dateE
             return res.render('pages/assign', { username: user.firstName, info: err });
         } else {
             // Store message for employee.
-            var message_text = "You were assigned task #" + storeResult.newTaskId + " (" + dateStart + " " + timeStart + " - " +
-                dateEnd + " " + timeEnd + " by " + user.jobTitle + " " + user.firstName + " " + user.surname + " (" + user.username + ")";
+            var message_text = "You were assigned " + type + " #" + storeResult.newTaskId + " (" + dateStart + " " + timeStart + " - " + dateEnd + " " + timeEnd + ")";
 
             dbController.storeMessage(user.employeeId, employeeId, message_time(), message_text, function(err, result) {
                 if (err) {
@@ -276,7 +276,7 @@ function storeAndRender(user, res, employeeId, type, dateStart, timeStart, dateE
             var message_text = "You assigned " + type + " #" + storeResult.newTaskId + " (" + dateStart + " " +
                 timeStart + " - " + dateEnd + " " + timeEnd + ") to user #" + employeeId + ".";
 
-            dbController.storeMessage(employeeId, user.employeeId, message_time(), message_text, function(err, result) {
+            dbController.storeMessage(user.employeeId, user.employeeId, message_time(), message_text, function(err, result) {
                 if (err) {
                     console.log(time_now() + err);
                     return res.render('pages/assign', { username: user.firstName, info: err });

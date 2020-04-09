@@ -58,12 +58,20 @@
     <div id=message_inbox>
         <h1>Latest messages:</h1>
         <ul>
-            <% for(var i = 0; i< messages.length; i++) { %>
+            <% for(var i = 0; i< messages.length; i++) {
+				var senderObj = JSON.parse(messages[i].sender); 
+				%>
                 <li>
                     From:
-                    <%=JSON.stringify(messages[i].firstName).replace(/["]+/g,"")%>
-                        <%=JSON.stringify(messages[i].surname).replace(/["]+/g,"")%> -
-                            <%=JSON.stringify(messages[i].username).replace(/["]+/g,"")%>
+					<% if(senderObj.username === userObj.username) {
+						%>
+					System
+					<%} else 
+					{%>
+                    <%=JSON.stringify(senderObj.firstName).replace(/["]+/g,"")%>
+                        <%=JSON.stringify(senderObj.surname).replace(/["]+/g,"")%> -
+                            <%=JSON.stringify(senderObj.username).replace(/["]+/g,"")%>
+					<%}%>
                                 <br>
                                 <%=JSON.stringify(messages[i].body).replace(/["]+/g,"")%>
                                     <br> -

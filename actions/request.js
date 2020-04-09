@@ -149,7 +149,7 @@ function post(req, res) {
                                                     if (err) {
                                                         getRequestListAndRender(req.user, res, err);
                                                     } else {
-                                                        getRequestListAndRender(req.user, res, result.message);
+                                                        getRequestListAndRender(req.user, res, "New request submitted.");
                                                     }
                                                 });
                                             }
