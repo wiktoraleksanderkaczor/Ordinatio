@@ -75,6 +75,11 @@ function post(req, res) {
                             console.log(time_now() + err);
                         } else {
                             var employeeId = result.employeeId;
+							if(employeeId) {
+								
+							} else {
+								return res.render ('pages/assign.ejs', { username: req.user.firstName, info: "No user with that email found." });
+							}
                             dbController.getUserRequests(employeeId, function(err, pendingRequests) {
                                 if (err) {
                                     console.log(time_now() + err);

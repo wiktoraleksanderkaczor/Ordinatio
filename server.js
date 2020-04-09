@@ -20,6 +20,7 @@ const assign = require("./actions/assign.js");
 const main = require("./actions/main.js");
 const acceptRequest = require("./actions/acceptRequest.js");
 const rejectRequest = require("./actions/rejectRequest.js");
+const cancelTask = require("./actions/cancelTask.js");
 
 
 // Set server settings and setup packages.
@@ -102,6 +103,10 @@ app.post("/acceptRequest", isAuthenticated, acceptRequest.post);
 app.get("/rejectRequest", isAuthenticated, rejectRequest.get);
 
 app.post("/rejectRequest", isAuthenticated, rejectRequest.post);
+
+app.get("/cancelTask", isAuthenticated, cancelTask.get);
+
+app.post("/cancelTask", isAuthenticated, cancelTask.post);
 
 // Render assign from assign if authenticated.
 app.get("/assign", isAuthenticated, assign.get);

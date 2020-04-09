@@ -2,7 +2,7 @@
 const path = require("path");
 const moment = require('moment');
 
-function time_now() { return "\n" + moment().format("YYYY-MM-DD - HH:mm:ss") + ": "; };
+function time_now() { return "\n [" + moment().format("YYYY-MM-DD - HH:mm:ss") + "]: "; };
 
 function message_time() { return moment().format("YYYY-MM-DD - HH:mm"); };
 

@@ -1,6 +1,0 @@
-const moment = require('moment');
-const dateOne = "2001-04-10";
-const dateTwo = "2001-04-15";
-const dateThree = "2001-04-20";
-
-console.log(moment(dateTwo).isBetween(dateOne, dateThree);

@@ -23,12 +23,17 @@
         <form id="assignForm" method="GET" action="/">
             <input type="submit" value="Assign rota or holiday" formaction="/assign" form="assignForm">
         </form>
+		<div>
+			<br>
+			<%=info%>
+			<br>
+		</div>
         <div id=pending_requests>
             <h1>Pending shift/holiday requests:</h1>
             <ul>
                 <% for(var i = 0; i< requests.length; i++) { %>
                     <li>
-                        Request ID:
+                        Request ID: 
                         <%=JSON.stringify(requests[i].requestId).replace(/["]+/g,"")%>
                             <br> Type:
                             <%=JSON.stringify(requests[i].type).replace(/["]+/g,"")%> request
@@ -53,7 +58,36 @@
                     <% } %>
             </ul>
         </div>
-        <div id=message_inbox>
+		<br>
+			<h1>Upcoming Shifts:</h1>
+			<% for(var i = 0; i < shifts.length; i++) { %>
+				<div>
+					<% var taskIds = []; %>
+					Start time: <%=JSON.stringify(shifts[i].dateStart).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeStart).replace(/["]+/g,"")%>
+					<br>
+					End time: <%=JSON.stringify(shifts[i].dateEnd).replace(/["]+/g,"")%> - <%=JSON.stringify(shifts[i].timeEnd).replace(/["]+/g,"")%>
+					<br>
+					Employees: 
+					<ul>
+						<% for(var j = 0; j < shifts[i].employees.length; j++) { 
+							taskIds.push(JSON.stringify(shifts[i].employees[j].employeeShiftId));
+						%>
+							<li>
+							<%=JSON.stringify(shifts[i].employees[j].firstName).replace(/["]+/g,"")%> <%=JSON.stringify(shifts[i].employees[j].surname).replace(/["]+/g,"")%> (
+							<%=JSON.stringify(shifts[i].employees[j].username).replace(/["]+/g,"")%>) - <%=JSON.stringify(shifts[i].employees[j].jobTitle).replace(/["]+/g,"")%> <form id="removeEmployeeForm" method="POST" action="/">
+								<input type="submit" value="Remove employee" formaction="/cancelTask/?taskIds=[<%=shifts[i].employees[j].employeeShiftId%>]" form="removeEmployeeForm">
+								</form>
+							</li>
+						<% }%>
+					</ul>
+					<form id="cancelShiftForm" method="POST" action="/">
+						<input type="submit" value="Cancel" formaction="/cancelTask/?taskIds=<%=JSON.stringify(taskIds)%>" form="cancelShiftForm">
+					</form>
+				</div>
+				<br>
+			<% }%>
+        <br>
+		<div id=message_inbox>
             <h1>Latest messages:</h1>
             <ul>
                 <% for(var i = 0; i< messages.length; i++) { %>
@@ -70,12 +104,9 @@
                     <% } %>
             </ul>
         </div>
+		
     </div>
-    <div>
-        <br>
-        <%=info%>
-            <br>
-    </div>
+   
 </body>
 
 </html>

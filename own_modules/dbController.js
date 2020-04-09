@@ -7,7 +7,6 @@ const moment = require("moment");
 const dbPath = path.join(__dirname, "..", "database", "users.db");
 const db = new sqlite3.Database(dbPath);
 
-
 // Function to initialise the database 
 function initialise() {
     db.serialize(() => {
@@ -20,7 +19,6 @@ function initialise() {
 
 // Function to store a user.
 function storeUser(firstName, surname, jobTitle, email, passwordHash, role, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.storeUser() called.");
     db.run("INSERT INTO accounts (firstName, surname, jobTitle, username, password, role) VALUES($firstName, $surname, $jobTitle, $username, $password, $role)", {
         $firstName: firstName,
         $surname: surname,
@@ -46,7 +44,6 @@ function storeUser(firstName, surname, jobTitle, email, passwordHash, role, call
 
 //function to delete a user from the database by their employeeId
 function deleteUser(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteUser() called.");
     db.run("DELETE FROM accounts WHERE employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err) => {
@@ -60,7 +57,6 @@ function deleteUser(employeeId, callback) {
 
 //function to store a message in the messages table
 function storeMessage(senderId, recipientId, dateTimeSubmitted, body, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.storeMessage() called.");
     db.run("INSERT INTO messages (senderId, recipientId, dateTimeSubmitted, body) VALUES($senderId, $recipientId, $dateTimeSubmitted, $body)", {
         $senderId: senderId,
         $recipientId: recipientId,
@@ -84,7 +80,6 @@ function storeMessage(senderId, recipientId, dateTimeSubmitted, body, callback) 
 
 //function to retrieve a message by its message employeeId
 function getMessage(messageId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getMessage() called.");
     db.get("SELECT * FROM messages INNER JOIN accounts ON messages.senderId=accounts.employeeId WHERE messageId=$messageId", {
         $messageId: messageId
     }, (err, row) => {
@@ -100,7 +95,6 @@ function getMessage(messageId, callback) {
 
 //function to retrieve all of a users messages by their employee employeeId
 function getUserMessages(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserMessages() called.");
     db.all("SELECT * FROM messages INNER JOIN accounts ON messages.recipientId=accounts.employeeId WHERE recipientId=$employeeId ORDER BY messages.messageId DESC", {
         $employeeId: employeeId
     }, (err, rows) => {
@@ -114,9 +108,6 @@ function getUserMessages(employeeId, callback) {
 
 //function to retrieve a user's sent messages by their employee employeeId
 function getUserSentMessages(senderId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + err);
-
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserSentMessages() called.");
     db.all("SELECT * FROM messages INNER JOIN accounts ON messages.recipientId=accounts.employeeId WHERE senderId=$senderId", {
         $senderId: senderId
     }, (err, rows) => {
@@ -130,7 +121,6 @@ function getUserSentMessages(senderId, callback) {
 
 //function to delete a specific message
 function deleteMessage(messageId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteMessage() called.");
     db.run("DELETE * FROM messages WHERE messageId=$messageId", {
         $messageId: messageId
     }, (err) => {
@@ -146,7 +136,6 @@ function deleteMessage(messageId, callback) {
 
 //function to delete all of a user's messages
 function deleteAllUserMessages(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteAllUserMessages() called.");
     db.run("DELETE * FROM messages WHERE recipientId=$employeeId", {
         $employeeId: employeeId
     }, (err) => {
@@ -160,7 +149,6 @@ function deleteAllUserMessages(employeeId, callback) {
 
 //function to delete all of a user's sent messages
 function deleteAllUserSentMessages(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteAllUserSentMessages() called.");
     db.run("DELETE * FROM messages WHERE senderId=$employeeId", {
         $employeeId: employeeId
     }, (err) => {
@@ -174,7 +162,6 @@ function deleteAllUserSentMessages(employeeId, callback) {
 
 // Function to store a request in database
 function storeRequest(employeeId, type, dateTimeSubmitted, dateStart, dateEnd, timeStart, timeEnd, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.storeRequest() called.");
     db.run("INSERT INTO requests (employeeId, type, dateTimeSubmitted, dateStart, dateEnd, timeStart, timeEnd) VALUES($employeeId, $type, $dateTimeSubmitted, $dateStart, $dateEnd, $timeStart, $timeEnd)", {
         $employeeId: employeeId,
         $type: type,
@@ -202,7 +189,6 @@ function storeRequest(employeeId, type, dateTimeSubmitted, dateStart, dateEnd, t
 
 //Function to cancel (delete) a request from the database
 function deleteRequest(requestId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteRequest() called.");
     db.run("DELETE FROM requests WHERE requestId=$requestId", {
         $requestId: requestId
     }, (err) => {
@@ -216,7 +202,6 @@ function deleteRequest(requestId, callback) {
 
 // Function to store a task in database.
 function storeTask(employeeId, type, dateStart, dateEnd, timeStart, timeEnd, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.storeTask() called.");
     db.run("INSERT INTO tasks (employeeId, type, dateStart, dateEnd, timeStart, timeEnd) VALUES($employeeId, $type, $dateStart, $dateEnd, $timeStart, $timeEnd)", {
         $employeeId: employeeId,
         $type: type,
@@ -242,7 +227,6 @@ function storeTask(employeeId, type, dateStart, dateEnd, timeStart, timeEnd, cal
 
 //Function to retrieve a task by its employeeId
 function getTask(taskId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getTask() called.");
     db.get("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId=accounts.employeeId WHERE tasks.taskId=$taskId", {
         $taskId: taskId
     }, (err, row) => {
@@ -256,7 +240,6 @@ function getTask(taskId, callback) {
 
 //Function to cancel (delete) a task
 function deleteTask(taskId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteTask() called.");
     db.run("DELETE FROM tasks WHERE taskId=$taskId", {
         $taskId: taskId
     }, (err) => {
@@ -270,7 +253,6 @@ function deleteTask(taskId, callback) {
 
 //Function to retrieve user by user employeeId
 function getUserById(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserById() called.");
     db.get("SELECT * FROM accounts WHERE employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err, row) => {
@@ -284,7 +266,7 @@ function getUserById(employeeId, callback) {
 
 //Function to retrieve user by email
 function getUserByEmail(email, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserByEmail() called.");
+
     db.get("SELECT * FROM accounts WHERE username=$username", {
         $username: email
     }, (err, row) => {
@@ -298,7 +280,6 @@ function getUserByEmail(email, callback) {
 
 // Function to retrieve user role by user employeeId
 function getUserRole(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserRole() called.");
     db.get("SELECT role FROM accounts WHERE employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err, row) => {
@@ -310,11 +291,8 @@ function getUserRole(employeeId, callback) {
     });
 }
 
-
-
 //Function to retrieve a request by its employeeId
 function getRequest(requestId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getRequest() called.");
     db.get("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.employeeId WHERE requests.requestId=$requestId", {
         $requestId: requestId
     }, (err, row) => {
@@ -328,7 +306,6 @@ function getRequest(requestId, callback) {
 
 //Function to retrieve a user's requests by their employeeId
 function getUserRequests(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserRequests() called.");
     db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.employeeId WHERE requests.employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err, rows) => {
@@ -340,11 +317,8 @@ function getUserRequests(employeeId, callback) {
     });
 }
 
-
-
 //Function to delete all of a user's requests 
 function deleteAllUserRequests(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteAllUserRequests() called.");
     db.run("DELETE * FROM requests INNER JOIN accounts ON requests.employeeId=accounts.employeeId WHERE requests.employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err) => {
@@ -358,7 +332,6 @@ function deleteAllUserRequests(employeeId, callback) {
 
 //Function to retrieve a user's tasks by their employeeId
 function getUserTasks(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserTasks() called.");
     db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err, rows) => {
@@ -373,7 +346,6 @@ function getUserTasks(employeeId, callback) {
 //Function to retrieve a user's tasks by their employeeId and task type.
 //Type can be "Holiday" or "Shift"
 function getUserTasksByType(employeeId, type, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getUserTasksByType() called.");
     db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.employeeId=$employeeId AND tasks.type=$type", {
         $employeeId: employeeId,
         $type: type
@@ -388,7 +360,6 @@ function getUserTasksByType(employeeId, type, callback) {
 
 //Function to delete all of a user's tasks
 function deleteAllUserTasks(employeeId, callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.deleteAllUserTasks() called.");
     db.run("DELETE * FROM tasks INNER JOIN accounts ON tasks.employeeId=accounts.employeeId WHERE tasks.employeeId=$employeeId", {
         $employeeId: employeeId
     }, (err) => {
@@ -402,7 +373,6 @@ function deleteAllUserTasks(employeeId, callback) {
 
 //Function to retrieve all tasks on the system
 function getAllTasks(callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getAllTasks() called.");
     db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId", (err, rows) => {
         if (err, rows) {
             callback(err, rows);
@@ -412,9 +382,37 @@ function getAllTasks(callback) {
     });
 }
 
+//Function to retrieve all shifts on the system
+function getAllShifts(callback) {
+	db.all("SELECT * FROM tasks INNER JOIN accounts ON tasks.employeeId = accounts.employeeId WHERE tasks.type = 'Shift'", (err, rows) => {
+        if (err, rows) {
+            callback(err, rows);
+        } else {
+            callback(null, rows);
+        }
+    });
+}
+
+//Function to return shifts with matching start and end times to a given shift 
+function getMatchingShifts(shiftId, dateStart, dateEnd, timeStart, timeEnd, callback) {
+	db.all("SELECT * FROM tasks INNER JOIN accounts on tasks.employeeId = accounts.employeeId WHERE tasks.dateStart = $dateStart AND tasks.dateEnd = $dateEnd AND tasks.timeStart = $timeStart AND tasks.timeEnd = $timeEnd AND tasks.taskId != $shiftId", {
+		$shiftId: shiftId,
+		$dateStart: dateStart,
+		$dateEnd: dateEnd,
+		$timeStart: timeStart,
+		$timeEnd: timeEnd
+		}, (err, rows) => {
+			if(err) {
+				callback(err, null);
+			}
+			else {
+				callback(null, rows);
+			}
+	});
+}
+
 //Function to retrieve all pending requests on the system
 function getAllRequests(callback) {
-    console.log("\n[" + moment().format("YYYY-MM-DD - HH:mm:ss:SSS") + "]: " + "dbController.getAllRequests() called.");
     db.all("SELECT * FROM requests INNER JOIN accounts ON requests.employeeId = accounts.employeeId", (err, rows) => {
         if (err, rows) {
             callback(err, rows);
@@ -426,7 +424,8 @@ function getAllRequests(callback) {
 
 module.exports.getAllTasks = getAllTasks;
 module.exports.getAllRequests = getAllRequests;
-
+module.exports.getAllShifts = getAllShifts;
+module.exports.getMatchingShifts = getMatchingShifts;
 
 module.exports.initialise = initialise;
 module.exports.storeTask = storeTask;
