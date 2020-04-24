@@ -58,7 +58,8 @@
     <div id=message_inbox>
         <h1>Latest messages:</h1>
         <ul>
-            <% for(var i = 0; i< messages.length; i++) {
+            <% for(var i = 0; i< 10; i++) {
+			if(messages[i]) {
 				var senderObj = JSON.parse(messages[i].sender); 
 				%>
                 <li>
@@ -78,7 +79,7 @@
                                     <%=JSON.stringify(messages[i].dateTimeSubmitted).replace(/["]+/g,"")%>
                 </li>
                 <br>
-                <% } %>
+                <% }} %>
         </ul>
     </div>
 </body>
