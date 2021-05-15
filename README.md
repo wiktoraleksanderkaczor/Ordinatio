@@ -1,4 +1,5 @@
 # Ordinatio
+A project made as part of a web technologies module in 3rd year Cybersecurity and Forensics at Napier University.
 
 ## Technologies:
 - NodeJS
